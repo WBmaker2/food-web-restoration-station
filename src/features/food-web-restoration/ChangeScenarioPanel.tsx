@@ -1,6 +1,7 @@
 import type { ChangeScenario } from '../../data/types';
 import { getOrganism } from '../../data/foodWebOrganisms';
 import { CHANGE_LABEL, LEVEL_LABEL } from '../../data/changeScenarios';
+import { iGa } from '../../lib/koreanPostpositions';
 
 type Props = {
   scenario: ChangeScenario;
@@ -23,7 +24,7 @@ export function ChangeScenarioPanel({ scenario, beforeLevels, afterLevels }: Pro
       <div className="scenario-panel__event">
         <span className="scenario-panel__event-icon" aria-hidden="true">⚡</span>
         <p>
-          사건: <strong>{triggerOrg?.name}</strong>이(가){' '}
+          사건: <strong>{iGa(triggerOrg?.name ?? '')}</strong>{' '}
           <strong>{CHANGE_LABEL[trigger.change]}</strong>
         </p>
       </div>

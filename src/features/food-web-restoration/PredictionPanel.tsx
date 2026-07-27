@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { getOrganism } from '../../data/foodWebOrganisms';
 import type { InfluenceResult } from '../../data/types';
-import { REASONING_TEMPLATES, DIRECTION_OPTIONS } from '../../data/feedbackRules';
+import { REASONING_TEMPLATES, DIRECTION_OPTIONS, renderReasoningSentence } from '../../data/feedbackRules';
 import type { Prediction, ReasoningSentence } from './useFoodWebState';
 
 type Props = {
@@ -131,8 +131,9 @@ function ReasoningBuilder({
   const [filled, setFilled] = useState<Record<string, string>>({});
   const tpl = REASONING_TEMPLATES.find((t) => t.id === templateId)!;
 
+  /** 공유 렌더러로 위임. */
   const renderSentence = (t: typeof tpl, f: Record<string, string>) =>
-    t.slots.reduce((s, slot) => s.replace(`{${slot}}`, f[slot] ?? '___'), t.template);
+    renderReasoningSentence(t.id, f);
 
   const add = () => {
     onAdd({ templateId, filled });

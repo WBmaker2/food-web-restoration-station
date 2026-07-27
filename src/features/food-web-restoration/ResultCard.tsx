@@ -3,6 +3,7 @@ import { getOrganism } from '../../data/foodWebOrganisms';
 import type { ChangeScenario, InfluenceResult } from '../../data/types';
 import type { Prediction, ReasoningSentence } from './useFoodWebState';
 import { INFLUENCE_LABEL } from '../../lib/influenceEngine';
+import { renderReasoningSentence } from '../../data/feedbackRules';
 
 type Props = {
   scenario: ChangeScenario;
@@ -61,7 +62,7 @@ export function ResultCard({
     if (reasoning.length > 0) {
       lines.push('');
       lines.push('근거 문장:');
-      reasoning.forEach((s, i) => lines.push(`${i + 1}. ${s.filled ? JSON.stringify(s.filled) : ''} (틀 ${s.templateId})`));
+      reasoning.forEach((s, i) => lines.push(`${i + 1}. ${renderReasoningSentence(s.templateId, s.filled)}`));
     }
     if (revision.trim()) {
       lines.push('');

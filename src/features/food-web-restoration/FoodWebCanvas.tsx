@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { getOrganism } from '../../data/foodWebOrganisms';
 import type { RestoredLink } from '../../lib/foodWebGraph';
 import type { InfluenceResult, OrganismRole } from '../../data/types';
+import { euroRo } from '../../lib/koreanPostpositions';
 import { OrganismCard } from './OrganismCard';
 import { linkAriaLabel } from '../../lib/accessibilityLabels';
 
@@ -203,7 +204,7 @@ export function FoodWebCanvas({
                 type="button"
                 className="fweb-remove-btn"
                 onClick={() => onRemoveLink(l.relationId)}
-                aria-label={`${getOrganism(l.foodId)?.name}에서 ${getOrganism(l.eaterId)?.name}(으)로의 연결 지우기`}
+                aria-label={`${getOrganism(l.foodId)?.name}에서 ${euroRo(getOrganism(l.eaterId)?.name ?? '')}의 연결 지우기`}
               >
                 지우기
               </button>

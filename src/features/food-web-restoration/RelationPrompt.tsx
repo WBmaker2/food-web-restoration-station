@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { FEEDING_RELATIONS } from '../../data/feedingRelations';
 import { getOrganism } from '../../data/foodWebOrganisms';
 import type { AddLinkResult } from '../../lib/foodWebGraph';
+import { eulReul, iGa } from '../../lib/koreanPostpositions';
 
 type Props = {
   /** 이 미션에서 연결해야 할 관계 후보 id 목록. */
@@ -103,7 +104,7 @@ export function RelationPrompt({
               className={`clue-card ${done ? 'is-done' : ''} ${r.confidence === 'possible' ? 'is-possible' : ''}`}
               onClick={() => handleDirect(r.id)}
               disabled={done}
-              aria-label={`단서: ${getOrganism(r.foodId)?.name}을(를) ${getOrganism(r.eaterId)?.name}이(가) 먹음. ${r.confidence === 'possible' ? '대체 먹이 후보.' : ''} ${done ? '이미 연결됨.' : '연결하려면 선택.'}`}
+              aria-label={`단서: ${eulReul(getOrganism(r.foodId)?.name ?? '')} ${iGa(getOrganism(r.eaterId)?.name ?? '')} 먹음. ${r.confidence === 'possible' ? '대체 먹이 후보.' : ''} ${done ? '이미 연결됨.' : '연결하려면 선택.'}`}
             >
               <span className="clue-card__clue">{r.clue}</span>
               <span className="clue-card__arrow">
@@ -121,7 +122,7 @@ export function RelationPrompt({
       <div className="relation-prompt__steps" aria-label="단계별 연결">
         <p className="relation-prompt__step-status" aria-live="polite">
           {step.phase === 'pick-food' && '1단계: 먹히는 생물을 고르세요.'}
-          {step.phase === 'pick-eater' && `2단계: ${getOrganism(step.foodId!)?.name}을(를) 먹는 생물을 고르세요.`}
+          {step.phase === 'pick-eater' && `2단계: ${eulReul(getOrganism(step.foodId!)?.name ?? '')} 먹는 생물을 고르세요.`}
           {step.phase === 'confirm' && `3단계: ${getOrganism(step.foodId!)?.name} → ${getOrganism(step.eaterId!)?.name} 연결을 확인하세요.`}
         </p>
 
