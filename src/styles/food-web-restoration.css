@@ -1,0 +1,154 @@
+/* 먹이망 연결 복원소 — 메인 스타일.
+   접근성 원칙(문서 13): 색만으로 구분 금지(아이콘+글자+선 모양 병용), 터치 44px+.
+   반응형/모션 줄이기는 a11y.css 로 분리. */
+
+:root {
+  --role-producer: #4caf50; --role-primary: #ff9800; --role-secondary: #2196f3;
+  --role-apex: #9c27b0; --role-decomposer: #795548;
+  --inc-increase: #2e7d32; --inc-decrease: #c62828; --inc-possible: #f9a825;
+  --inc-uncertain: #6a1b9a; --inc-none: #757575;
+  --bg: #f7f9fb; --surface: #fff; --border: #d7dde3; --text: #1a1f24; --muted: #5f6b76;
+  --touch: 44px; --radius: 12px; --shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+* { box-sizing: border-box; }
+html, body, #root { margin: 0; padding: 0; background: var(--bg); color: var(--text);
+  font-family: "Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif; font-size: 16px; line-height: 1.5; }
+button { font: inherit; cursor: pointer; min-height: var(--touch); border-radius: 8px;
+  border: 2px solid var(--border); background: var(--surface); padding: 8px 14px; color: var(--text); }
+button:focus-visible { outline: 3px solid #1976d2; outline-offset: 2px; }
+button:disabled { opacity: .5; cursor: not-allowed; }
+h1,h2,h3,h4 { margin: 0 0 .4em; line-height: 1.25; }
+
+/* 시작 화면 */
+.habitat-intro { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+.habitat-intro__title { font-size: 2rem; }
+.habitat-intro__subtitle { color: var(--muted); margin-bottom: 24px; }
+.habitat-intro__rule { background: #fff8e1; border: 2px solid #ffca28; border-radius: var(--radius); padding: 16px; margin-bottom: 24px; }
+.habitat-intro__rule h2 { color: #e65100; }
+.habitat-intro__rule-text { font-size: 1.15rem; font-weight: 600; }
+.habitat-intro__example { font-family: monospace; background: var(--surface); display: inline-block; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); }
+.habitat-intro__rule-note { color: var(--muted); font-size: .9rem; margin-top: 8px; }
+.habitat-intro__habitat, .habitat-intro__missions, .habitat-intro__settings, .habitat-intro__changelog {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
+.habitat-intro__missions ul, .habitat-intro__habitat ul { list-style: none; padding: 0; margin: 0; }
+.habitat-intro__missions li { margin-bottom: 8px; }
+.habitat-intro__missions button { width: 100%; text-align: left; }
+.habitat-intro__motion-toggle { display: inline-flex; align-items: center; gap: 8px; }
+.habitat-intro__changelog-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+.habitat-intro__changelog-table th, .habitat-intro__changelog-table td { border: 1px solid var(--border); padding: 8px; text-align: left; }
+
+/* 미션 화면 공통 */
+.fwr-app { max-width: 1100px; margin: 0 auto; padding: 12px 16px 64px; }
+.fwr-header { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.fwr-header h1 { font-size: 1.3rem; margin: 0; flex: 1; }
+.fwr-phase { background: #e3f2fd; color: #0d47a1; padding: 4px 12px; border-radius: 999px; font-weight: 600; font-size: .9rem; }
+.fwr-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: flex-end; margin: 24px 0; }
+.fwr-next { background: #1976d2; color: #fff; border-color: #1976d2; }
+.fwr-footer { color: var(--muted); font-size: .9rem; text-align: center; margin-top: 24px; }
+
+/* 카드 */
+.org-card { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 120px; min-height: var(--touch);
+  padding: 10px 8px; border-radius: var(--radius); border: 3px solid var(--border); background: var(--surface); box-shadow: var(--shadow); text-align: center; }
+.org-card.is-interactive { cursor: pointer; }
+.org-card.is-selected, .org-card.is-highlighted { border-color: #1976d2; box-shadow: 0 0 0 3px rgba(25,118,210,.25); }
+.org-card.is-dimmed { opacity: .45; }
+.org-card__icon { font-size: 1.6rem; line-height: 1; }
+.org-card__name { font-weight: 700; }
+.org-card__role-tag { font-size: .72rem; padding: 2px 8px; border-radius: 999px; color: #fff; font-weight: 600; }
+.org-card__level { font-size: .7rem; color: var(--muted); }
+.role-producer .org-card__role-tag { background: var(--role-producer); } .role-producer { border-top-color: var(--role-producer); }
+.role-primaryConsumer .org-card__role-tag { background: var(--role-primary); } .role-primaryConsumer { border-top-color: var(--role-primary); }
+.role-secondaryConsumer .org-card__role-tag { background: var(--role-secondary); } .role-secondaryConsumer { border-top-color: var(--role-secondary); }
+.role-apexConsumer .org-card__role-tag { background: var(--role-apex); } .role-apexConsumer { border-top-color: var(--role-apex); }
+.role-decomposer .org-card__role-tag { background: var(--role-decomposer); } .role-decomposer { border-top-color: var(--role-decomposer); }
+
+/* 먹이망 캔버스 */
+.fweb-canvas { position: relative; background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); min-height: 460px; overflow: visible; margin-bottom: 16px; }
+.fweb-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.fweb-edge.is-direct line { stroke: var(--text); stroke-width: 2.5; }
+.fweb-edge.is-indirect line { stroke: var(--inc-uncertain); stroke-width: 2; stroke-dasharray: 6 5; }
+.fweb-edge.is-emphasized line { stroke-width: 4; }
+.fweb-edge:not(.is-emphasized) line { opacity: .35; }
+.fweb-edge-label { font-size: 11px; fill: var(--muted); }
+.fweb-arrowhead--direct { fill: var(--text); }
+.fweb-arrowhead--indirect { fill: var(--inc-uncertain); }
+.fweb-card-slot { position: absolute; }
+.fweb-link-list { list-style: none; padding: 12px 16px; margin: 0; border-top: 1px solid var(--border); background: #fafbfc; max-height: 200px; overflow-y: auto; }
+.fweb-link-list li { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+.fweb-remove-btn { min-height: 36px; font-size: .8rem; padding: 4px 10px; color: var(--inc-decrease); border-color: var(--inc-decrease); }
+.fweb-empty { color: var(--muted); font-style: italic; }
+
+/* 관계 단서 패널 */
+.relation-prompt { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
+.relation-prompt__clues { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.clue-card { display: flex; flex-direction: column; gap: 6px; text-align: left; padding: 12px; background: #fafbfc; }
+.clue-card.is-done { opacity: .5; }
+.clue-card.is-possible { border-style: dashed; border-color: var(--inc-possible); }
+.clue-card__clue { font-size: .95rem; }
+.clue-card__arrow { font-family: monospace; font-weight: 600; color: #1976d2; }
+.clue-card__conf { font-size: .75rem; color: var(--muted); }
+.relation-prompt__steps { border-top: 1px dashed var(--border); padding-top: 12px; }
+.relation-prompt__step-status { font-weight: 600; margin-bottom: 8px; }
+.step-choices { display: flex; gap: 8px; flex-wrap: wrap; }
+.step-choice { background: #f0f4f8; }
+.step-choice--primary { background: #1976d2; color: #fff; border-color: #1976d2; }
+.relation-prompt__feedback { margin-top: 12px; padding: 10px; background: #fffde7; border-left: 4px solid var(--inc-possible); border-radius: 4px; }
+
+/* 사건 패널 */
+.scenario-panel { background: #fff3e0; border: 1px solid #ffb74d; border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
+.scenario-panel__event { display: flex; align-items: center; gap: 8px; font-size: 1.1rem; }
+.scenario-panel__event-icon { font-size: 1.4rem; }
+.scenario-panel__conditions { margin-top: 8px; }
+.scenario-panel__conditions h3 { font-size: .95rem; color: #e65100; }
+.scenario-panel__conditions ul { margin: 4px 0 0 18px; padding: 0; }
+.scenario-panel__compare { display: flex; gap: 16px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
+.scenario-panel__col { flex: 1; min-width: 180px; }
+.scenario-panel__arrow { font-size: 1.5rem; color: var(--muted); }
+.scenario-state-list { list-style: none; padding: 0; margin: 0; }
+.scenario-state-list li { display: flex; align-items: center; gap: 6px; padding: 4px 0; }
+.state-tag { font-size: .75rem; padding: 2px 8px; border-radius: 999px; color: #fff; font-weight: 600; }
+.state-low { background: var(--inc-decrease); } .state-medium { background: var(--inc-possible); } .state-high { background: var(--inc-increase); }
+.scenario-empty { color: var(--muted); }
+
+/* 예측 패널 */
+.prediction-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
+.prediction-panel__hint { color: var(--muted); margin-bottom: 12px; }
+.prediction-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.prediction-grid--indirect .prediction-row { background: #faf5ff; border-style: dashed; }
+.prediction-row { display: flex; align-items: center; gap: 12px; padding: 10px; border: 2px solid var(--border); border-radius: 8px; background: #fafbfc; }
+.prediction-row.is-indirect { border-color: var(--inc-uncertain); }
+.prediction-row__name { font-weight: 600; min-width: 90px; }
+.prediction-row__options { display: flex; gap: 6px; flex: 1; }
+.pred-option { flex: 1; min-height: var(--touch); background: var(--surface); border: 2px solid var(--border); }
+.pred-option.is-selected { background: #1976d2; color: #fff; border-color: #1976d2; }
+.reasoning-builder { border-top: 1px dashed var(--border); padding-top: 12px; margin-top: 8px; }
+.reasoning-builder select { min-height: var(--touch); padding: 6px 10px; border: 2px solid var(--border); border-radius: 8px; font: inherit; width: 100%; margin-bottom: 8px; }
+.reasoning-builder__slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; margin-bottom: 8px; }
+.reasoning-builder__slots label { display: flex; flex-direction: column; gap: 4px; font-size: .85rem; color: var(--muted); }
+.reasoning-builder__preview { background: #e8f5e9; padding: 10px; border-radius: 6px; border-left: 4px solid var(--inc-increase); }
+.reasoning-builder__add { background: var(--inc-increase); color: #fff; border-color: var(--inc-increase); }
+.reasoning-builder__list { list-style: none; padding: 0; margin: 12px 0 0; }
+.reasoning-builder__list li { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px; background: #fafbfc; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; }
+.reasoning-builder__list button { min-height: 36px; font-size: .8rem; color: var(--inc-decrease); border-color: var(--inc-decrease); }
+
+/* 결과 카드 */
+.result-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
+.result-card__restore { background: #e8f5e9; padding: 12px; border-radius: 8px; margin-bottom: 16px; }
+.result-card__table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+.result-card__table th, .result-card__table td { border: 1px solid var(--border); padding: 8px; text-align: center; }
+.result-card__table caption { text-align: left; color: var(--muted); margin-bottom: 6px; }
+.result-card__table .agree { color: var(--inc-increase); font-weight: 700; }
+.result-card__table .disagree { color: var(--inc-decrease); font-weight: 700; }
+.result-card__table .unknown { color: var(--muted); }
+.result-card__reasons { margin-bottom: 16px; }
+.result-card__reasons ul { margin: 4px 0 0 18px; padding: 0; }
+.result-card__revision { margin-bottom: 16px; }
+.result-card__revision textarea { width: 100%; min-height: 80px; padding: 10px; border: 2px solid var(--border); border-radius: 8px; font: inherit; }
+.result-card__share { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.result-card__share button { background: #5c6bc0; color: #fff; border-color: #5c6bc0; }
+.result-card__raw { width: 100%; }
+.result-card__raw pre { background: #263238; color: #eceff1; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: .85rem; }
+.result-card__teacher-q { background: #f3e5f5; padding: 12px; border-radius: 8px; border-left: 4px solid var(--inc-uncertain); }
+.result-card__teacher-q h3 { color: var(--inc-uncertain); margin-bottom: 4px; }
+.result-card__motion-hint { color: var(--muted); font-size: .85rem; text-align: right; }

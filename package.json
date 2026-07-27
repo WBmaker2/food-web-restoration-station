@@ -1,0 +1,29 @@
+{
+  "name": "food-web-restoration-station",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "먹이망 연결 복원소 - 초등 5~6학년 과학 교육용 웹앱 (서버 없는 SPA)",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "build:pages": "tsc -b && vite build --base=/food-web-restoration-station/",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "^25.0.1",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.8"
+  }
+}
