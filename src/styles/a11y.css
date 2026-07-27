@@ -1,5 +1,6 @@
 /* 접근성·반응형 스타일.
-   문서 Section 13: 모션 줄이기, 작은 화면 단계형 모드 전환, 키보드 포커스. */
+   문서 Section 13: 모션 줄이기, 작은 화면 단계형 모드 전환, 키보드 포커스.
+   색 톤은 food-web-restoration.css 의 CSS 변수를 따름. */
 
 /* 모션 줄이기 — 시스템 설정 자동 감지 + 사용자 토글 둘 다 지원 */
 @media (prefers-reduced-motion: reduce) {
@@ -16,13 +17,14 @@
   animation: none !important;
 }
 
-/* 키보드 포커스 — 마우스 사용 불가 학생도 조작 가능하도록 명확한 outline */
+/* 키보드 포커스 — 명확한 outline */
 button:focus-visible,
 select:focus-visible,
 textarea:focus-visible,
+input:focus-visible,
 [role="radio"]:focus-visible,
 [role="radiogroup"]:focus-visible {
-  outline: 3px solid #1976d2;
+  outline: 3px solid var(--leaf);
   outline-offset: 2px;
 }
 
@@ -37,24 +39,68 @@ textarea:focus-visible,
   border: 0;
 }
 
-/* 작은 화면 — 캔버스 축소 대신 레이아웃 재배치 (문서 13) */
-@media (max-width: 640px) {
-  .fweb-canvas { min-height: 360px; }
-  .org-card { width: 96px; }
-  .org-card__icon { font-size: 1.3rem; }
-  .fwr-header { flex-direction: column; align-items: flex-start; }
-  .fwr-header h1 { width: 100%; }
-  .prediction-row { flex-direction: column; align-items: stretch; }
-  .prediction-row__name { min-width: 0; }
-  .relation-prompt__clues { grid-template-columns: 1fr; }
-  .prediction-grid { grid-template-columns: 1fr; }
-  .fwr-actions { flex-direction: column; }
-  .fwr-actions button { width: 100%; }
+/* ───────────────────────── 작은 화면 (태블릿) ───────────────────────── */
+@media (max-width: 900px) {
+  .fweb-trophic-header { font-size: 0.85rem; gap: 4px; padding: 8px 10px; }
+  .org-card { width: 110px; }
+  .org-card__icon { font-size: 1.6rem; }
+  .habitat-intro__title { font-size: 2.2rem; }
 }
 
-/* 고대비 모드 선호 시 테두리 강화 */
+/* ───────────────────────── 모바일 (폰) ───────────────────────── */
+/* 캔버스는 가로 스크롤을 허용해 위상 정렬 레이아웃을 유지 (문서 13: 축소 대신 단계형).
+   카드 크기를 줄이고 캔버스 높이를 늘려 한 화면에 더 많이 보이게. */
+@media (max-width: 640px) {
+  .fwr-app { padding: 10px 10px 48px; }
+  .fwr-header { padding: 10px; gap: 8px; }
+  .fwr-header h1 { font-size: 1.2rem; width: 100%; flex: none; }
+  .fwr-home { font-size: 0.85rem; min-height: 40px; padding: 6px 10px; }
+  .fwr-phase { font-size: 0.8rem; padding: 4px 10px; }
+
+  .fweb-canvas-scroll { padding: 10px; }
+  .fweb-svg { inset: 10px; }
+  .org-card { width: 96px; padding: 8px 6px; }
+  .org-card__icon { font-size: 1.4rem; }
+  .org-card__name { font-size: 0.82rem; }
+  .org-card__role-tag { font-size: 0.62rem; padding: 1px 6px; }
+  .org-card__level { font-size: 0.6rem; }
+
+  .fweb-trophic-header { font-size: 0.72rem; }
+  .fweb-trophic-header span:not(.fweb-trophic-arrow) { display: none; }
+  .fweb-trophic-header span:nth-of-type(1),
+  .fweb-trophic-header span:nth-of-type(3),
+  .fweb-trophic-header span:nth-of-type(5),
+  .fweb-trophic-header span:nth-of-type(7) { display: inline; }
+
+  .relation-prompt__clues { grid-template-columns: 1fr; }
+  .prediction-grid { grid-template-columns: 1fr; }
+  .prediction-row { flex-direction: column; align-items: stretch; }
+  .prediction-row__name { min-width: 0; }
+  .fwr-actions { flex-direction: column; }
+  .fwr-actions button { width: 100%; }
+
+  .habitat-intro { padding: 20px 12px 60px; }
+  .habitat-intro__title { font-size: 1.9rem; }
+  .habitat-intro__rule-text { font-size: 1rem; }
+  .scenario-panel__compare { flex-direction: column; }
+  .scenario-panel__arrow { transform: rotate(90deg); }
+  .result-card__table { font-size: 0.82rem; }
+  .result-card__table th, .result-card__table td { padding: 6px 4px; }
+}
+
+/* ───────────────────────── 고대비 모드 ───────────────────────── */
 @media (prefers-contrast: more) {
   .org-card { border-width: 4px; }
   button { border-width: 3px; }
   .fweb-edge line { stroke-width: 4; }
 }
+
+/* ───────────────────────── 캔버스 가로 스크롤 힌트 ───────────────────────── */
+/* 작은 화면에서 캔버스가 가로로 스크롤됨을 시각적으로 안내 */
+.fweb-canvas-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-deep) var(--paper-deep);
+}
+.fweb-canvas-scroll::-webkit-scrollbar { height: 8px; width: 8px; }
+.fweb-canvas-scroll::-webkit-scrollbar-track { background: var(--paper-deep); }
+.fweb-canvas-scroll::-webkit-scrollbar-thumb { background: var(--line-deep); border-radius: 4px; }
