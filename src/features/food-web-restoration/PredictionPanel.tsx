@@ -16,8 +16,8 @@ type Props = {
 };
 
 const OPTIONS: { value: Prediction; label: string }[] = [
-  { value: 'increase', label: '늘어' },
-  { value: 'decrease', label: '줄어' },
+  { value: 'increase', label: '늘어남' },
+  { value: 'decrease', label: '줄어듦' },
   { value: 'no-change', label: '변화 없음' },
 ];
 

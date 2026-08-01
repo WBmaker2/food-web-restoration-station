@@ -170,8 +170,8 @@ export function ResultCard({
 }
 
 const PRED_LABEL: Record<Prediction, string> = {
-  increase: '늘어',
-  decrease: '줄어',
+  increase: '늘어남',
+  decrease: '줄어듦',
   'no-change': '변화 없음',
 };
 

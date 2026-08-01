@@ -19,12 +19,12 @@ export type FeedbackKey = keyof typeof FEEDBACK_MESSAGES;
 export const REASONING_TEMPLATES: { id: string; template: string; slots: string[] }[] = [
   {
     id: 'tpl-food-shortage',
-    template: '{food_i} 줄어들면 {eater_e} 먹이가 줄어 {dir}할 수 있습니다.',
+    template: '{food_i} 줄어들면 {eater_e} 먹이가 줄어 {dir} 수 있습니다.',
     slots: ['food', 'eater', 'dir'],
   },
   {
     id: 'tpl-predation-release',
-    template: '{predator_i} 줄어들면 {prey_i} 먹던 {food_e} 포식 압력이 줄어 {dir}할 수 있습니다.',
+    template: '{predator_i} 줄어들면 {prey_i} 먹던 {food_e} 포식 압력이 줄어 {dir} 수 있습니다.',
     slots: ['predator', 'prey', 'food', 'dir'],
   },
   {
@@ -39,8 +39,9 @@ export const REASONING_TEMPLATES: { id: string; template: string; slots: string[
   },
 ];
 
-/** 변화 방향 선택지(빈 칸 채우기용). */
-export const DIRECTION_OPTIONS = ['늘어', '줄어', '변하지 않'] as const;
+/** 변화 방향 선택지(빈 칸 채우기용). 관형사형으로 뒤에 오는 말과 자연스럽게 결합.
+ *  예: "{dir} 수 있습니다" → "늘어날 수 있습니다" / "줄어들 수 있습니다" / "변화가 없을 수 있습니다" */
+export const DIRECTION_OPTIONS = ['늘어날', '줄어들', '변화가 없을'] as const;
 
 /** 근거 문장 템플릿을 실제 값으로 채운 문장으로 렌더링한다.
  *  PredictionPanel(미리보기/추가)과 ResultCard(복사 텍스트)가 공유.
