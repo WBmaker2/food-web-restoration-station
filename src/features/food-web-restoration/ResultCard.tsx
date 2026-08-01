@@ -4,6 +4,7 @@ import type { ChangeScenario, InfluenceResult } from '../../data/types';
 import type { Prediction, ReasoningSentence } from './useFoodWebState';
 import { INFLUENCE_LABEL } from '../../lib/influenceEngine';
 import { renderReasoningSentence } from '../../data/feedbackRules';
+import type { ChangeKind } from '../../data/types';
 
 type Props = {
   scenario: ChangeScenario;
@@ -12,6 +13,8 @@ type Props = {
   reasoning: ReasoningSentence[];
   matchedCount: number;
   expectedCount: number;
+  /** 사건의 변화 종류 — 근거 문장 템플릿 맥락에 사용. */
+  change: ChangeKind;
   reduceMotion: boolean;
 };
 
@@ -24,6 +27,7 @@ export function ResultCard({
   reasoning,
   matchedCount,
   expectedCount,
+  change,
   reduceMotion,
 }: Props) {
   const [revision, setRevision] = useState('');
@@ -62,7 +66,7 @@ export function ResultCard({
     if (reasoning.length > 0) {
       lines.push('');
       lines.push('근거 문장:');
-      reasoning.forEach((s, i) => lines.push(`${i + 1}. ${renderReasoningSentence(s.templateId, s.filled)}`));
+      reasoning.forEach((s, i) => lines.push(`${i + 1}. ${renderReasoningSentence(s.templateId, s.filled, change)}`));
     }
     if (revision.trim()) {
       lines.push('');
@@ -71,7 +75,7 @@ export function ResultCard({
     lines.push('');
     lines.push('이 가상 초원의 조건에서 정리한 결과예요. 실제 자연 전체의 법칙으로 보면 안 돼요.');
     return lines.join('\n');
-  }, [scenario, matchedCount, expectedCount, rows, reasoning, revision]);
+  }, [scenario, matchedCount, expectedCount, rows, reasoning, revision, change]);
 
   const handleCopy = async () => {
     try {

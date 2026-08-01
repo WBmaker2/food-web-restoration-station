@@ -99,6 +99,7 @@ export function FoodWebRestorationApp() {
             influences={st.virtualResults}
             predictions={st.active.predictions}
             reasoning={st.active.reasoning}
+            change={scenario.trigger.change}
             onPredict={st.setPrediction}
             onAddReasoning={st.addReasoning}
             onRemoveReasoning={st.removeReasoning}
@@ -126,6 +127,7 @@ export function FoodWebRestorationApp() {
             reasoning={st.active.reasoning}
             matchedCount={st.grade.matched.length}
             expectedCount={scenario.expectedRelations.length}
+            change={scenario.trigger.change}
             reduceMotion={st.reduceMotion}
           />
           <div className="fwr-actions">

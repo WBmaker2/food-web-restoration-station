@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { getOrganism } from '../../data/foodWebOrganisms';
-import type { InfluenceResult } from '../../data/types';
-import { REASONING_TEMPLATES, DIRECTION_OPTIONS, renderReasoningSentence } from '../../data/feedbackRules';
+import type { ChangeKind, InfluenceResult } from '../../data/types';
+import { getReasoningTemplates, DIRECTION_OPTIONS, renderReasoningSentence } from '../../data/feedbackRules';
 import type { Prediction, ReasoningSentence } from './useFoodWebState';
 import { TermTip } from './TermTip';
 
@@ -10,6 +10,8 @@ type Props = {
   influences: InfluenceResult[];
   predictions: Record<string, Prediction>;
   reasoning: ReasoningSentence[];
+  /** 사건의 변화 종류 — 근거 문장 템플릿 맥락에 사용. */
+  change: ChangeKind;
   onPredict: (organismId: string, p: Prediction) => void;
   onAddReasoning: (sentence: ReasoningSentence) => void;
   onRemoveReasoning: (index: number) => void;
@@ -27,6 +29,7 @@ export function PredictionPanel({
   influences,
   predictions,
   reasoning,
+  change,
   onPredict,
   onAddReasoning,
   onRemoveReasoning,
@@ -77,6 +80,7 @@ export function PredictionPanel({
       <ReasoningBuilder
         organismIds={organismIds}
         reasoning={reasoning}
+        change={change}
         onAdd={onAddReasoning}
         onRemove={onRemoveReasoning}
       />
@@ -120,21 +124,24 @@ function PredictionRow({
 function ReasoningBuilder({
   organismIds,
   reasoning,
+  change,
   onAdd,
   onRemove,
 }: {
   organismIds: string[];
   reasoning: ReasoningSentence[];
+  change: ChangeKind;
   onAdd: (s: ReasoningSentence) => void;
   onRemove: (i: number) => void;
 }) {
-  const [templateId, setTemplateId] = useState(REASONING_TEMPLATES[0].id);
+  const templates = getReasoningTemplates(change);
+  const [templateId, setTemplateId] = useState(templates[0].id);
   const [filled, setFilled] = useState<Record<string, string>>({});
-  const tpl = REASONING_TEMPLATES.find((t) => t.id === templateId)!;
+  const tpl = templates.find((t) => t.id === templateId) ?? templates[0];
 
-  /** 공유 렌더러로 위임. */
+  /** 공유 렌더러로 위임. 사건 종류(change)를 넘겨 맥락에 맞는 템플릿 사용. */
   const renderSentence = (t: typeof tpl, f: Record<string, string>) =>
-    renderReasoningSentence(t.id, f);
+    renderReasoningSentence(t.id, f, change);
 
   const add = () => {
     onAdd({ templateId, filled });
@@ -160,7 +167,7 @@ function ReasoningBuilder({
       </summary>
       <p className="reasoning-builder__guide">왜 그렇게 생각했는지 문장으로 적어 보세요. (선택)</p>
       <select value={templateId} onChange={(e) => { setTemplateId(e.target.value); setFilled({}); }}>
-        {REASONING_TEMPLATES.map((t) => (
+        {templates.map((t) => (
           <option key={t.id} value={t.id}>{renderSentence(t, {})}</option>
         ))}
       </select>
@@ -191,7 +198,7 @@ function ReasoningBuilder({
 
       <ul className="reasoning-builder__list">
         {reasoning.map((r, i) => {
-          const t = REASONING_TEMPLATES.find((x) => x.id === r.templateId)!;
+          const t = templates.find((x) => x.id === r.templateId) ?? templates[0];
           return (
             <li key={i}>
               <span>{renderSentence(t, r.filled)}</span>
