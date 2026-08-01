@@ -9,17 +9,29 @@ type Props = {
   beforeLevels?: Record<string, 'low' | 'medium' | 'high'>;
   /** 사건 발동 후(가상 결과) 수준. */
   afterLevels?: Record<string, 'low' | 'medium' | 'high'>;
+  /** 현재 단계 — 진행 가이드에 사용. */
+  phase?: 'restore' | 'predict' | 'result';
 };
 
-// 사건 패널: 변화 전·후 상태와 고정 조건을 보여준다.
-// '이 미션의 조건에서는' 프레이밍을 항상 표시 (문서 10.2).
-export function ChangeScenarioPanel({ scenario, beforeLevels, afterLevels }: Props) {
+// 사건 패널: 변화 전·후 상태, 고정 조건, 그리고 "지금 뭘 해야 하는지" 가이드.
+// 초등학생이 헤매지 않도록 단계별 안내를 상단에 명확히.
+export function ChangeScenarioPanel({ scenario, beforeLevels, afterLevels, phase = 'restore' }: Props) {
   const trigger = scenario.trigger;
   const triggerOrg = getOrganism(trigger.organismId);
 
+  const guide: Record<string, { icon: string; text: React.ReactNode }> = {
+    restore: { icon: '🔗', text: <>아래 <strong>단서</strong>를 읽고 카드를 연결해 먹이 관계를 만드세요.</> },
+    predict: { icon: '🤔', text: <>연결한 관계를 보고, 각 생물이 <strong>어떻게 변할지</strong> 예측해 보세요.</> },
+    result: { icon: '✨', text: <>내 예측과 <strong>실제 결과</strong>를 비교하고, 다르면 생각을 고쳐 보세요.</> },
+  };
+
   return (
     <section className="scenario-panel" aria-label="변화 사건">
-      <h2 className="scenario-panel__title">{scenario.title}</h2>
+      {/* 진행 가이드 — 초등학생이 "지금 뭘 해야 하나?" 헤매지 않도록 */}
+      <div className="scenario-panel__guide" role="note">
+        <span className="scenario-panel__guide-icon" aria-hidden="true">{guide[phase].icon}</span>
+        <p>{guide[phase].text}</p>
+      </div>
 
       <div className="scenario-panel__event">
         <span className="scenario-panel__event-icon" aria-hidden="true">⚡</span>
@@ -30,7 +42,7 @@ export function ChangeScenarioPanel({ scenario, beforeLevels, afterLevels }: Pro
       </div>
 
       <div className="scenario-panel__conditions">
-        <h3>이 미션의 조건에서는</h3>
+        <h3>이 미션에서는요…</h3>
         <ul>
           {scenario.fixedConditions.map((c, i) => (
             <li key={i}>{c}</li>
@@ -41,12 +53,12 @@ export function ChangeScenarioPanel({ scenario, beforeLevels, afterLevels }: Pro
       {(beforeLevels || afterLevels) && (
         <div className="scenario-panel__compare">
           <div className="scenario-panel__col">
-            <h4>변화 전</h4>
+            <h4>변하기 전</h4>
             <StateList levels={beforeLevels ?? {}} />
           </div>
           <span className="scenario-panel__arrow" aria-hidden="true">→</span>
           <div className="scenario-panel__col">
-            <h4>변화 후(가상 결과)</h4>
+            <h4>변한 뒤(가상 결과)</h4>
             <StateList levels={afterLevels ?? {}} />
           </div>
         </div>

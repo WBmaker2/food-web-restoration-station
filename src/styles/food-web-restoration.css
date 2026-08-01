@@ -89,101 +89,259 @@ button:focus-visible { outline: 3px solid var(--leaf); outline-offset: 2px; }
 button:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
 
 /* ───────────────────────── 시작 화면 ───────────────────────── */
+/* 초등학생 친화적 간소화 + Swiss 영감 위계 (큰 타이포, 대담한 여백) */
 .habitat-intro {
-  max-width: 780px;
+  max-width: 720px;
   margin: 0 auto;
-  padding: 32px 16px 80px;
-}
-.habitat-intro__title {
-  font-family: var(--font-hand);
-  font-size: 2.6rem;
-  color: var(--leaf-deep);
-  text-align: center;
-  margin-bottom: 4px;
-  text-shadow: 2px 2px 0 rgba(232, 179, 57, 0.3);
-}
-.habitat-intro__subtitle {
-  color: var(--ink-soft);
-  text-align: center;
-  font-size: 1.05rem;
-  margin-bottom: 28px;
+  padding: 24px 16px 80px;
 }
 
-/* 화살표 규칙 — 관찰 노트의 메모 느낌 */
-.habitat-intro__rule {
+/* 히어로 — 큰 제목 + 한 줄 요약 + 큰 시작 버튼 */
+.habitat-hero {
+  text-align: center;
+  padding: 32px 16px 24px;
+  margin-bottom: 24px;
+}
+.habitat-hero__title {
+  font-family: var(--font-hand);
+  font-size: clamp(2.4rem, 8vw, 3.6rem);
+  color: var(--leaf-deep);
+  margin: 0 0 16px;
+  text-shadow: 3px 3px 0 rgba(232, 179, 57, 0.35);
+  line-height: 1.05;
+  text-wrap: balance;
+}
+.habitat-hero__lead {
+  font-size: clamp(1rem, 3vw, 1.2rem);
+  color: var(--ink-soft);
+  margin: 0 auto 24px;
+  max-width: 520px;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+.habitat-hero__lead strong { color: var(--leaf-deep); }
+.habitat-hero__start {
+  font-family: var(--font-hand);
+  font-size: 1.4rem;
+  font-weight: 700;
+  background: var(--leaf);
+  color: #fff;
+  border: 3px solid var(--leaf-deep);
+  padding: 16px 32px;
+  border-radius: 999px;
+  box-shadow: var(--shadow-lift);
+  min-height: 56px;
+}
+.habitat-hero__start:hover { background: var(--leaf-deep); transform: translateY(-2px) scale(1.02); }
+.habitat-hero__hint { color: var(--ink-muted); font-size: 0.9rem; margin-top: 12px; }
+
+/* 3가지 규칙 카드 */
+.habitat-rule-card {
   background: var(--paper-card);
-  border: 2px dashed var(--leaf);
+  border: 2px solid var(--leaf);
   border-radius: var(--radius);
   padding: 20px;
   margin-bottom: 20px;
-  position: relative;
   box-shadow: var(--shadow-card);
 }
-.habitat-intro__rule::before {
-  content: '🌿';
-  position: absolute;
-  top: -16px;
-  left: 20px;
-  font-size: 1.5rem;
-  background: var(--paper);
-  padding: 0 6px;
-}
-.habitat-intro__rule h2 {
+.habitat-rule-card__title {
   font-family: var(--font-hand);
   font-size: 1.4rem;
   color: var(--leaf-deep);
+  margin-bottom: 14px;
+  text-align: center;
 }
-.habitat-intro__rule-text { font-size: 1.15rem; font-weight: 700; color: var(--ink); }
-.habitat-intro__example {
+.habitat-rule-card__list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 14px;
+  counter-reset: none;
+}
+.habitat-rule-card__list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--line);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+.habitat-rule-card__list li:last-child { border-bottom: none; }
+.habitat-rule-card__num {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px; height: 32px;
+  background: var(--leaf);
+  color: #fff;
+  border-radius: 50%;
+  font-weight: 700;
   font-family: var(--font-hand);
-  font-size: 1.25rem;
-  background: var(--paper-deep);
-  display: inline-block;
-  padding: 8px 16px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--line);
-  color: var(--leaf-deep);
-  margin: 8px 0;
+  font-size: 1.1rem;
 }
-.habitat-intro__rule-note { color: var(--ink-muted); font-size: 0.9rem; margin-top: 8px; }
+.habitat-rule-card__list strong { color: var(--leaf-deep); }
+.habitat-rule-card__more {
+  width: 100%;
+  background: var(--paper-deep);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+.habitat-rule-card__detail {
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--paper-deep);
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+.habitat-rule-card__detail p { margin: 0 0 6px; }
+.habitat-rule-card__detail p:last-child { margin-bottom: 0; }
 
-.habitat-intro__habitat,
-.habitat-intro__missions,
-.habitat-intro__settings,
-.habitat-intro__changelog {
+/* 미션 선택 — 간결, 난이도 표시 */
+.habitat-missions {
   background: var(--paper-card);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 20px;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   box-shadow: var(--shadow-soft);
 }
-.habitat-intro__habitat h2,
-.habitat-intro__missions h2,
-.habitat-intro__settings h2 { font-family: var(--font-hand); font-size: 1.35rem; color: var(--leaf-deep); }
-.habitat-intro__missions ul,
-.habitat-intro__habitat ul { list-style: none; padding: 0; margin: 0; }
-.habitat-intro__missions li { margin-bottom: 10px; }
-.habitat-intro__missions button {
+.habitat-missions__title {
+  font-family: var(--font-hand);
+  font-size: 1.4rem;
+  color: var(--leaf-deep);
+  margin-bottom: 4px;
+}
+.habitat-missions__sub { color: var(--ink-muted); font-size: 0.88rem; margin: 0 0 14px; }
+.habitat-missions__list { list-style: none; padding: 0; margin: 0; }
+.habitat-missions__list li { margin-bottom: 10px; }
+.habitat-missions__btn {
   width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   text-align: left;
-  font-weight: 600;
+  padding: 12px 16px;
   border-left: 5px solid var(--leaf);
   background: linear-gradient(to right, var(--paper-deep) 0%, var(--paper-card) 100%);
+  font-weight: 600;
 }
-.habitat-intro__missions button:hover { border-left-color: var(--berry); }
-.habitat-intro__habitat ul { padding-left: 20px; list-style: '🌱 '; }
-.habitat-intro__habitat li { margin-bottom: 6px; color: var(--ink-soft); }
-.habitat-intro__motion-toggle {
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 8px 12px; cursor: pointer;
+.habitat-missions__btn:hover { border-left-color: var(--berry); transform: translateX(4px); }
+.habitat-missions__btn.is-first {
+  border-left-color: var(--sun);
+  background: linear-gradient(to right, #fff8e1 0%, var(--paper-card) 100%);
 }
-.habitat-intro__motion-toggle input { width: 20px; height: 20px; accent-color: var(--leaf); }
-.habitat-intro__changelog-btn { font-weight: 600; }
-.habitat-intro__changelog-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.9rem; }
-.habitat-intro__changelog-table th,
-.habitat-intro__changelog-table td { border: 1px solid var(--line); padding: 8px; text-align: left; }
-.habitat-intro__changelog-table th { background: var(--paper-deep); }
+.habitat-missions__num {
+  font-family: var(--font-hand);
+  color: var(--leaf-deep);
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  min-width: 56px;
+}
+.habitat-missions__name { flex: 1; }
+.habitat-missions__diff { flex-shrink: 0; font-size: 0.85rem; }
+.habitat-missions__easy {
+  background: var(--inc-increase);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+/* 하단 설정/로그 — 눈에 덜 띄게 */
+.habitat-bottom {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 16px;
+  background: var(--paper-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-size: 0.88rem;
+  color: var(--ink-muted);
+}
+.habitat-bottom__motion { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.habitat-bottom__motion input { width: 18px; height: 18px; accent-color: var(--leaf); }
+.habitat-bottom__log {
+  font-size: 0.85rem;
+  min-height: 36px;
+  padding: 6px 12px;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px dashed var(--line-deep);
+}
+.habitat-bottom__log-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  font-size: 0.82rem;
+}
+.habitat-bottom__log-table th,
+.habitat-bottom__log-table td { border: 1px solid var(--line); padding: 6px; text-align: left; }
+.habitat-bottom__log-table th { background: var(--paper-deep); }
+
+/* ───────────────────────── 용어 풀이 (TermTip) ───────────────────────── */
+.term-tip { position: relative; display: inline; }
+.term-tip__btn {
+  display: inline;
+  min-height: 0;
+  padding: 0 2px;
+  border: none;
+  background: none;
+  box-shadow: none;
+  color: var(--leaf-deep);
+  font-weight: 700;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  cursor: help;
+}
+.term-tip__btn:hover, .term-tip__btn.is-open { color: var(--berry); }
+.term-tip__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px; height: 16px;
+  margin-left: 2px;
+  background: var(--leaf);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.65rem;
+  font-weight: 700;
+  vertical-align: middle;
+}
+.term-tip__help {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--paper);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 400;
+  line-height: 1.5;
+  width: max-content;
+  max-width: 240px;
+  white-space: normal;
+  text-align: left;
+  box-shadow: var(--shadow-lift);
+  z-index: 100;
+}
+.term-tip__help::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--ink);
+}
 
 /* ───────────────────────── 미션 화면 공통 ───────────────────────── */
 .fwr-app { max-width: 1100px; margin: 0 auto; padding: 16px 16px 64px; }
@@ -452,6 +610,21 @@ button:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shado
   box-shadow: var(--shadow-soft);
 }
 .scenario-panel__title { font-family: var(--font-hand); font-size: 1.4rem; color: #d2691e; }
+
+/* 진행 가이드 — 초등학생이 '지금 뭘 해야 하나?' 헤매지 않도록 */
+.scenario-panel__guide {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #e8f5e9;
+  border: 2px solid var(--inc-increase);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  margin-bottom: 14px;
+}
+.scenario-panel__guide-icon { font-size: 1.6rem; flex-shrink: 0; }
+.scenario-panel__guide p { margin: 0; font-weight: 600; color: var(--ink); line-height: 1.5; }
+.scenario-panel__guide strong { color: var(--inc-increase); }
 .scenario-panel__event {
   display: flex;
   align-items: center;
@@ -509,6 +682,19 @@ button:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shado
 .prediction-panel h2 { font-family: var(--font-hand); font-size: 1.4rem; color: var(--leaf-deep); }
 .prediction-panel h3 { font-size: 1rem; color: var(--ink-soft); margin-top: 16px; }
 .prediction-panel__hint { color: var(--ink-muted); margin-bottom: 12px; font-size: 0.92rem; }
+/* 단계 배지 — '먼저 예측!' / '조금 어려워요' */
+.prediction-panel__step-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--inc-increase);
+  color: #fff;
+  vertical-align: middle;
+  margin-left: 6px;
+}
+.prediction-panel__step-badge.is-indirect { background: var(--inc-uncertain); }
 .prediction-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -540,7 +726,28 @@ button:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shado
 .pred-option:hover { border-color: var(--leaf); }
 .pred-option.is-selected { background: var(--leaf); color: #fff; border-color: var(--leaf-deep); }
 
-.reasoning-builder { border-top: 2px dashed var(--line); padding-top: 14px; margin-top: 10px; }
+.reasoning-builder {
+  border-top: 2px dashed var(--line);
+  padding: 14px;
+  margin-top: 16px;
+  background: var(--paper-deep);
+  border-radius: var(--radius-sm);
+}
+.reasoning-builder[open] { padding-bottom: 16px; }
+.reasoning-builder__summary {
+  cursor: pointer;
+  font-family: var(--font-hand);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--leaf-deep);
+  padding: 4px 0;
+  list-style: none;
+}
+.reasoning-builder__summary::-webkit-details-marker { display: none; }
+.reasoning-builder__summary::before { content: '▸ '; color: var(--leaf); }
+.reasoning-builder[open] .reasoning-builder__summary::before { content: '▾ '; }
+.reasoning-builder__count { font-size: 0.85rem; color: var(--ink-muted); font-weight: 400; }
+.reasoning-builder__guide { font-size: 0.85rem; color: var(--ink-muted); margin: 8px 0 10px; }
 .reasoning-builder h3 { font-family: var(--font-hand); color: var(--leaf-deep); }
 .reasoning-builder select {
   min-height: var(--touch);

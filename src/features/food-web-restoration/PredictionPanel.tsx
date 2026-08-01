@@ -3,6 +3,7 @@ import { getOrganism } from '../../data/foodWebOrganisms';
 import type { InfluenceResult } from '../../data/types';
 import { REASONING_TEMPLATES, DIRECTION_OPTIONS, renderReasoningSentence } from '../../data/feedbackRules';
 import type { Prediction, ReasoningSentence } from './useFoodWebState';
+import { TermTip } from './TermTip';
 
 type Props = {
   organismIds: string[];
@@ -40,11 +41,11 @@ export function PredictionPanel({
     <section className="prediction-panel" aria-label="변화 예측">
       <h2>변화 예측하기</h2>
       <p className="prediction-panel__hint">
-        직접 연결된 생물부터 예측하고, 간접 영향은 가능성으로 생각해 보세요.
+        바로 연결된 생물부터 예측하고, <TermTip term="간접 영향" help="직접 연결되지는 않았지만 건너건너 영향을 받는 것. 풀이 줄면 뱀도 간접으로 영향을 받아요.">건너 연결</TermTip>은 가능성으로만 생각해 보세요.
       </p>
 
-      <h3>직접 연결된 생물</h3>
-      {directIds.length === 0 && <p>아직 직접 연결된 생물이 없어요. 먼저 먹이망을 복원해 보세요.</p>}
+      <h3>바로 연결된 생물 <span className="prediction-panel__step-badge">먼저 예측!</span></h3>
+      {directIds.length === 0 && <p>아직 바로 연결된 생물이 없어요. 먼저 먹이 관계를 연결해 보세요.</p>}
       <div className="prediction-grid">
         {directIds.map((id) => (
           <PredictionRow
@@ -58,7 +59,7 @@ export function PredictionPanel({
 
       {indirectIds.length > 0 && (
         <>
-          <h3>간접 연결 생물 (두 단계 이상)</h3>
+          <h3>건너 연결 생물 <span className="prediction-panel__step-badge is-indirect">조금 어려워요</span></h3>
           <div className="prediction-grid prediction-grid--indirect">
             {indirectIds.map((id) => (
               <PredictionRow
@@ -140,9 +141,24 @@ function ReasoningBuilder({
     setFilled({});
   };
 
+  // slot 이름 → 초등학생용 친화적 라벨
+  const slotLabel: Record<string, string> = {
+    food: '줄어든/없어진 생물',
+    eater: '영향 받는 생물',
+    predator: '줄어든/없어진 생물',
+    prey: '남은 생물',
+    alt: '다른 먹이',
+    a: '생물 1',
+    b: '생물 2',
+    dir: '방향',
+  };
+
   return (
-    <div className="reasoning-builder">
-      <h3>근거 문장 만들기</h3>
+    <details className="reasoning-builder">
+      <summary className="reasoning-builder__summary">
+        ✏️ 근거 문장 만들기 <span className="reasoning-builder__count">{reasoning.length > 0 && `(${reasoning.length}개)`}</span>
+      </summary>
+      <p className="reasoning-builder__guide">왜 그렇게 생각했는지 문장으로 적어 보세요. (선택)</p>
       <select value={templateId} onChange={(e) => { setTemplateId(e.target.value); setFilled({}); }}>
         {REASONING_TEMPLATES.map((t) => (
           <option key={t.id} value={t.id}>{renderSentence(t, {})}</option>
@@ -151,15 +167,15 @@ function ReasoningBuilder({
       <div className="reasoning-builder__slots">
         {tpl.slots.map((slot) => (
           <label key={slot}>
-            <span>{slot}</span>
+            <span>{slotLabel[slot] ?? slot}</span>
             {slot === 'dir' ? (
               <select value={filled[slot] ?? ''} onChange={(e) => setFilled({ ...filled, [slot]: e.target.value })}>
-                <option value="">선택</option>
+                <option value="">선택…</option>
                 {DIRECTION_OPTIONS.map((d) => <option key={d} value={d}>{d}</option>)}
               </select>
             ) : (
               <select value={filled[slot] ?? ''} onChange={(e) => setFilled({ ...filled, [slot]: e.target.value })}>
-                <option value="">생물 선택</option>
+                <option value="">생물 선택…</option>
                 {organismIds.map((id) => (
                   <option key={id} value={getOrganism(id)?.name ?? id}>{getOrganism(id)?.name}</option>
                 ))}
@@ -184,6 +200,6 @@ function ReasoningBuilder({
           );
         })}
       </ul>
-    </div>
+    </details>
   );
 }

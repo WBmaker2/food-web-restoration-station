@@ -55,6 +55,7 @@ export function FoodWebRestorationApp() {
 
       <ChangeScenarioPanel
         scenario={scenario}
+        phase={phase}
         beforeLevels={phase !== 'restore' ? beforeLevels : undefined}
         afterLevels={phase === 'result' ? afterLevels : undefined}
       />
