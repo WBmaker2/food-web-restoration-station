@@ -161,6 +161,23 @@ export function useFoodWebState() {
 
   const goIntro = useCallback(() => setScreen('intro'), []);
 
+  /** 현재 미션의 다음 미션 id. 마지막 미션이면 null. */
+  const nextScenarioId = useMemo(() => {
+    const idx = CHANGE_SCENARIOS.findIndex((s) => s.id === activeScenarioId);
+    if (idx < 0 || idx >= CHANGE_SCENARIOS.length - 1) return null;
+    return CHANGE_SCENARIOS[idx + 1].id;
+  }, [activeScenarioId]);
+
+  /** 다음 미션으로 이동. 다음이 없으면(마지막 미션) 시작 화면으로. */
+  const goNextMission = useCallback(() => {
+    if (nextScenarioId) {
+      setActiveScenarioId(nextScenarioId);
+      setScreen('mission');
+    } else {
+      setScreen('intro');
+    }
+  }, [nextScenarioId]);
+
   return {
     screen,
     reduceMotion,
@@ -179,6 +196,8 @@ export function useFoodWebState() {
     grade,
     startMission,
     goIntro,
+    nextScenarioId,
+    goNextMission,
   };
 }
 

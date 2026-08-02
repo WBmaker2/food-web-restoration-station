@@ -74,14 +74,14 @@ export function FoodWebRestorationApp() {
             onAddRelation={st.addRelation}
           />
           <div className="fwr-actions">
-            <button type="button" onClick={st.resetLinks}>모두 지우기</button>
+            <button type="button" onClick={st.resetLinks}>모두 지우고 다시</button>
             <button
               type="button"
               className="fwr-next"
               onClick={() => setPhase('predict')}
               disabled={st.active.links.length === 0}
             >
-              다음: 변화 예측하기
+              다음: 변화 예측하기 →
             </button>
           </div>
         </>
@@ -105,9 +105,9 @@ export function FoodWebRestorationApp() {
             onRemoveReasoning={st.removeReasoning}
           />
           <div className="fwr-actions">
-            <button type="button" onClick={() => setPhase('restore')}>이전</button>
+            <button type="button" onClick={() => setPhase('restore')}>← 이전 단계</button>
             <button type="button" className="fwr-next" onClick={() => setPhase('result')}>
-              다음: 결과 비교
+              다음: 결과 비교하기 →
             </button>
           </div>
         </>
@@ -130,12 +130,14 @@ export function FoodWebRestorationApp() {
             change={scenario.trigger.change}
             reduceMotion={st.reduceMotion}
           />
-          <div className="fwr-actions">
-            <button type="button" onClick={() => setPhase('predict')}>예측 수정</button>
+          <div className="fwr-actions fwr-actions--result">
+            <button type="button" onClick={() => setPhase('predict')}>예측 고치기</button>
             <button type="button" onClick={() => { st.resetLinks(); setPhase('restore'); }}>
-              다시 복원
+              이 단계 다시하기
             </button>
-            <button type="button" onClick={st.goIntro}>처음으로</button>
+            <button type="button" className="fwr-next" onClick={() => { st.goNextMission(); setPhase('restore'); }}>
+              {st.nextScenarioId ? `다음 미션으로 넘어가기 →` : `모두 끝났어요! 처음으로 →`}
+            </button>
           </div>
         </>
       )}
