@@ -1,28 +1,35 @@
 import { useState } from 'react';
 import { FEEDING_RELATIONS } from '../../data/feedingRelations';
 import { getOrganism } from '../../data/foodWebOrganisms';
+import { describeAddLinkResult } from '../../data/feedbackRules';
 import type { AddLinkResult } from '../../lib/foodWebGraph';
-import { eulReul, iGa } from '../../lib/koreanPostpositions';
+import { eulReul } from '../../lib/koreanPostpositions';
 
 type Props = {
-  /** 이 미션에서 연결해야 할 관계 후보 id 목록. */
+  /** 이 미션에서 연결해야 할 관계와 참고 후보 id 목록. */
   candidateRelationIds: string[];
   /** 이미 연결된 relation id. */
   connectedRelationIds: string[];
+  /** 정답 집합. 선택 후보에 오답이 섞여도 남은 수를 정확히 계산한다. */
+  expectedRelationIds: string[];
   expectedCount: number;
-  onAddRelation: (relationId: string) => AddLinkResult;
+  onAddRelationByPair: (foodId: string, eaterId: string) => AddLinkResult;
 };
 
-// 관계 단서 패널.
-// 넓은 화면: 단서 카드를 클릭해 바로 연결.
-// 작은 화면(단계형): 1) 먹히는 생물 선택 2) 먹는 생물 선택 3) 연결 확인 (문서 12.2).
-type Step = { phase: 'pick-food' | 'pick-eater' | 'confirm'; foodId: string | null; eaterId: string | null };
+// 넓은 화면: 그래프에서 카드 두 장을 선택하고, 이 패널은 단서 참고용으로 사용.
+// 작은 화면: 1) 먹히는 생물 선택 2) 먹는 생물 선택 3) 연결 확인.
+type Step = {
+  phase: 'pick-food' | 'pick-eater' | 'confirm';
+  foodId: string | null;
+  eaterId: string | null;
+};
 
 export function RelationPrompt({
   candidateRelationIds,
   connectedRelationIds,
+  expectedRelationIds,
   expectedCount,
-  onAddRelation,
+  onAddRelationByPair,
 }: Props) {
   const [step, setStep] = useState<Step>({ phase: 'pick-food', foodId: null, eaterId: null });
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -32,46 +39,23 @@ export function RelationPrompt({
     .filter((r): r is NonNullable<typeof r> => Boolean(r));
 
   const connected = new Set(connectedRelationIds);
-  const remaining = Math.max(0, expectedCount - connectedRelationIds.length);
+  const matchedCount = expectedRelationIds.filter((id) => connected.has(id)).length;
+  const remaining = Math.max(0, expectedCount - matchedCount);
 
-  /** 단서 직접 클릭(넓은 화면). */
-  const handleDirect = (relationId: string) => {
-    const res = onAddRelation(relationId);
-    setFeedback(describeResult(res));
-  };
-
-  /** 단계형: 먹히는 생물 클릭. */
   const chooseFood = (foodId: string) => {
     setStep({ phase: 'pick-eater', foodId, eaterId: null });
     setFeedback(null);
   };
 
-  /** 단계형: 먹는 생물 클릭. */
   const chooseEater = (eaterId: string) => {
     if (!step.foodId) return;
     setStep({ phase: 'confirm', foodId: step.foodId, eaterId });
   };
 
-  /** 단계형: 연결 확인. 후보에서 일치 관계를 찾아 추가. */
   const confirmConnect = () => {
     if (!step.foodId || !step.eaterId) return;
-    const match = candidates.find(
-      (r) => r.foodId === step.foodId && r.eaterId === step.eaterId,
-    );
-    if (!match) {
-      // 방향이 반대일 가능성 안내.
-      const reversed = candidates.find(
-        (r) => r.foodId === step.eaterId && r.eaterId === step.foodId,
-      );
-      setFeedback(
-        reversed
-          ? '화살표는 먹히는 생물에서 먹는 생물 쪽으로 그려요. 방향을 다시 확인해 보세요.'
-          : '이 두 생물은 이 미션의 먹이 관계 후보에 없어요. 단서를 다시 읽어보세요.',
-      );
-      return;
-    }
-    const res = onAddRelation(match.id);
-    setFeedback(describeResult(res));
+    const res = onAddRelationByPair(step.foodId, step.eaterId);
+    setFeedback(describeAddLinkResult(res));
     setStep({ phase: 'pick-food', foodId: null, eaterId: null });
   };
 
@@ -92,28 +76,31 @@ export function RelationPrompt({
       <p className="relation-prompt__hint" aria-live="polite">
         남은 연결 수: <strong>{remaining}</strong> / {expectedCount}
       </p>
+      <p className="relation-prompt__mode-hint">
+        <span className="relation-prompt__desktop-hint">
+          큰 화면에서는 위 생물 카드를 <strong>먹히는 생물 → 먹는 생물</strong> 순서로 눌러 연결하세요.
+        </span>
+        <span className="relation-prompt__mobile-hint">
+          아래 단계에서 <strong>먹히는 생물 → 먹는 생물</strong> 순서로 선택하세요.
+        </span>
+      </p>
 
-      {/* 넓은 화면용: 단서 카드 직접 클릭 */}
-      <div className="relation-prompt__clues">
+      {/* 단서 참고 영역: 확인 전 정답 화살표를 노출하지 않는다. */}
+      <div className="relation-prompt__clues" aria-label="먹이 관계 단서 목록">
         {candidates.map((r) => {
           const done = connected.has(r.id);
           return (
-            <button
+            <article
               key={r.id}
-              type="button"
               className={`clue-card ${done ? 'is-done' : ''} ${r.confidence === 'possible' ? 'is-possible' : ''}`}
-              onClick={() => handleDirect(r.id)}
-              disabled={done}
-              aria-label={`단서: ${eulReul(getOrganism(r.foodId)?.name ?? '')} ${iGa(getOrganism(r.eaterId)?.name ?? '')} 먹음. ${r.confidence === 'possible' ? '대체 먹이 후보.' : ''} ${done ? '이미 연결됨.' : '연결하려면 선택.'}`}
+              aria-label={`단서: ${r.clue} ${r.confidence === 'possible' ? '대체 먹이 후보.' : '확정 관계 단서.'} ${done ? '이미 연결됨.' : ''}`}
             >
               <span className="clue-card__clue">{r.clue}</span>
-              <span className="clue-card__arrow">
-                {getOrganism(r.foodId)?.name} → {getOrganism(r.eaterId)?.name}
-              </span>
               <span className="clue-card__conf">
-                {r.confidence === 'possible' ? '대체 먹이 후보' : '확정 관계'}
+                {r.confidence === 'possible' ? '대체 먹이 후보' : '확정 관계 단서'}
+                {done ? ' · 연결됨' : ''}
               </span>
-            </button>
+            </article>
           );
         })}
       </div>
@@ -157,26 +144,10 @@ export function RelationPrompt({
       </div>
 
       {feedback && (
-        <p className="relation-prompt__feedback" role="status">
+        <p className="relation-prompt__feedback" role="status" aria-live="polite">
           {feedback}
         </p>
       )}
     </section>
   );
-}
-
-function describeResult(res: AddLinkResult): string {
-  if (res.ok) return '연결했어요. 화살표는 먹히는 생물에서 먹는 생물 쪽이에요.';
-  switch (res.reason) {
-    case 'duplicate':
-      return '이미 연결한 관계예요. 한 번만 저장해요.';
-    case 'self-loop':
-      return '자기 자신을 먹는 연결은 할 수 없어요.';
-    case 'decomposer':
-      return '분해자는 죽은 생물과 유기물을 분해하는 역할을 해요. 포식 관계에 넣지 않아요.';
-    case 'reversed':
-      return '화살표는 먹히는 생물에서 먹는 생물 쪽으로 그려요. 방향을 확인해 보세요.';
-    default:
-      return '이 관계는 이 미션에 없어요.';
-  }
 }

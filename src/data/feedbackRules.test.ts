@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { renderReasoningSentence, getReasoningTemplates } from './feedbackRules';
+import { describeAddLinkResult, renderReasoningSentence, getReasoningTemplates } from './feedbackRules';
 
 // 근거 문장 렌더링이 받침에 맞춘 올바른 조사를 만드는지 검증.
 describe('renderReasoningSentence — 조사 결합 렌더링', () => {
@@ -74,5 +74,18 @@ describe('getReasoningTemplates — 변화 종류별 템플릿', () => {
   it('disappear 템플릿의 food-shortage는 "사라지면" 포함', () => {
     const t = getReasoningTemplates('disappear').find((x) => x.id === 'tpl-food-shortage')!;
     expect(t.template).toContain('사라지면');
+  });
+});
+
+describe('describeAddLinkResult — 관계 연결 피드백', () => {
+  it('성공 결과는 연결 완료 문장을 반환한다', () => {
+    expect(describeAddLinkResult({
+      ok: true,
+      link: { relationId: 'r-grass-grasshopper', foodId: 'grass', eaterId: 'grasshopper' },
+    })).toContain('연결했어요');
+  });
+
+  it('알 수 없는 쌍은 단서 재확인 문장을 반환한다', () => {
+    expect(describeAddLinkResult({ ok: false, reason: 'unknown-relation' })).toContain('단서를 다시');
   });
 });

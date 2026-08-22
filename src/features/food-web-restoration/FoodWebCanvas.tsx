@@ -4,7 +4,8 @@ import type { RestoredLink } from '../../lib/foodWebGraph';
 import type { InfluenceResult, OrganismRole } from '../../data/types';
 import { euroRo } from '../../lib/koreanPostpositions';
 import { OrganismCard } from './OrganismCard';
-import { linkAriaLabel } from '../../lib/accessibilityLabels';
+import { influenceAriaLabel, linkAriaLabel } from '../../lib/accessibilityLabels';
+import { INFLUENCE_LABEL } from '../../lib/influenceEngine';
 
 type Props = {
   organismIds: string[];
@@ -15,6 +16,8 @@ type Props = {
   stepFoodId?: string | null;
   onSelectOrganism?: (id: string) => void;
   onRemoveLink?: (relationId: string) => void;
+  canvasLabel?: string;
+  linkListLabel?: string;
 };
 
 /** 트로픽 레벨(영양 단계): 왼쪽에서 오른쪽으로 갈수록 상위 포식자. */
@@ -91,6 +94,8 @@ export function FoodWebCanvas({
   stepFoodId,
   onSelectOrganism,
   onRemoveLink,
+  canvasLabel = '먹이망 복원 화면',
+  linkListLabel = '연결한 먹이 관계 목록',
 }: Props) {
   const layout = useMemo(() => layoutOrganisms(organismIds), [organismIds]);
 
@@ -102,7 +107,7 @@ export function FoodWebCanvas({
   }, [influences]);
 
   return (
-    <div className="fweb-canvas" role="group" aria-label="먹이망 복원 화면">
+    <div className="fweb-canvas" role="group" aria-label={canvasLabel}>
       {/* 영양 단계 헤더 — 위상 정렬 흐름을 시각적으로 안내 */}
       <div className="fweb-trophic-header" aria-hidden="true">
         <span>생산자</span>
@@ -182,6 +187,7 @@ export function FoodWebCanvas({
                 highlighted={Boolean(selectedId && selectedId === id)}
                 dimmed={Boolean(selectedId && selectedId !== id)}
                 level={inf ? `거리 ${Number.isFinite(inf.distance) ? inf.distance : '∞'}` : undefined}
+                ariaLabel={inf ? influenceAriaLabel(id, INFLUENCE_LABEL[inf.influence], inf.distance) : undefined}
                 onSelect={onSelectOrganism}
                 stateHint={stepFoodId === id ? '먹히는 생물로 선택됨' : undefined}
               />
@@ -191,7 +197,7 @@ export function FoodWebCanvas({
       </div>
 
       {/* 연결 목록 — 접근성 + 작은 화면 대체 */}
-      <ul className="fweb-link-list" aria-label="연결한 먹이 관계 목록">
+      <ul className="fweb-link-list" aria-label={linkListLabel}>
         {links.map((l) => (
           <li key={l.relationId}>
             <span aria-label={linkAriaLabel(l)}>

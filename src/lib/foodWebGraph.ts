@@ -75,6 +75,35 @@ export function addLink(
   return { ok: true, link };
 }
 
+/**
+ * 카드 두 장을 선택해 연결한다.
+ * 관계 ID를 직접 고르는 방식과 달리, 존재하지 않는 쌍·역방향·분해자 선택도
+ * 같은 판정 규칙으로 안내할 수 있다.
+ */
+export function addLinkByPair(
+  links: RestoredLink[],
+  foodId: string,
+  eaterId: string,
+  relations: FeedingRelation[],
+): AddLinkResult {
+  if (foodId === eaterId) return { ok: false, reason: 'self-loop' };
+  if (isDecomposer(foodId) || isDecomposer(eaterId)) {
+    return { ok: false, reason: 'decomposer' };
+  }
+  if (findReversed(links, foodId, eaterId)) {
+    return { ok: false, reason: 'reversed' };
+  }
+
+  const relation = relations.find((r) => r.foodId === foodId && r.eaterId === eaterId);
+  if (!relation) {
+    const reversedRelation = relations.find((r) => r.foodId === eaterId && r.eaterId === foodId);
+    return reversedRelation
+      ? { ok: false, reason: 'reversed' }
+      : { ok: false, reason: 'unknown-relation' };
+  }
+  return addLink(links, relation.id, relations);
+}
+
 /** 관계 id로 연결 삭제. */
 export function removeLink(links: RestoredLink[], relationId: string): RestoredLink[] {
   return links.filter((l) => l.relationId !== relationId);

@@ -72,8 +72,12 @@ export type InfluenceResult = {
 export type ChangeScenario = {
   id: string;
   title: string;
+  /** arrow: 관계 방향만 연습, impact: 변화 연쇄까지 예측. */
+  learningMode: 'arrow' | 'impact';
   trigger: ChangeTrigger;
   fixedConditions: string[];
   expectedRelations: string[];
+  /** 모바일 선택지와 단서에 함께 보여 줄 관계 후보. 정답 외 후보를 포함할 수 있다. */
+  choiceRelationIds: string[];
   acceptableExplanations: string[];
 };

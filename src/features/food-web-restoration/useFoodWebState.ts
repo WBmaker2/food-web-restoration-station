@@ -3,7 +3,7 @@ import { FEEDING_RELATIONS } from '../../data/feedingRelations';
 import { CHANGE_SCENARIOS, INITIAL_POPULATIONS } from '../../data/changeScenarios';
 import type { ChangeScenario, PopulationLevel } from '../../data/types';
 import {
-  addLink,
+  addLinkByPair,
   removeLink,
   clearLinks,
   gradeRestoration,
@@ -28,6 +28,13 @@ export type MissionState = {
   reasoning: ReasoningSentence[];
 };
 
+export function relationToRestoredLink(relationId: string): RestoredLink | undefined {
+  const relation = FEEDING_RELATIONS.find((r) => r.id === relationId);
+  return relation
+    ? { relationId: relation.id, foodId: relation.foodId, eaterId: relation.eaterId }
+    : undefined;
+}
+
 const EMPTY_MISSIONS: Record<string, MissionState> = {};
 
 export function useFoodWebState() {
@@ -43,13 +50,18 @@ export function useFoodWebState() {
     reasoning: [],
   };
 
-  /** 현재 미션의 활성 생물 id 목록(정답 관계에 등장하는 생물 + 사건 대상). */
+  /** 현재 미션의 활성 생물 id 목록(관계 후보·사건 대상·현재 선택에 등장하는 생물). */
   const activeOrganismIds = useMemo(() => {
     const scenario = CHANGE_SCENARIOS.find((s) => s.id === activeScenarioId);
     if (!scenario) return [] as string[];
     const ids = new Set<string>();
     ids.add(scenario.trigger.organismId);
-    for (const rid of scenario.expectedRelations) {
+    const relationIds = new Set([
+      ...scenario.expectedRelations,
+      ...scenario.choiceRelationIds,
+      ...active.links.map((link) => link.relationId),
+    ]);
+    for (const rid of relationIds) {
       const rel = FEEDING_RELATIONS.find((r) => r.id === rid);
       if (rel) {
         ids.add(rel.foodId);
@@ -57,7 +69,7 @@ export function useFoodWebState() {
       }
     }
     return [...ids];
-  }, [activeScenarioId]);
+  }, [active.links, activeScenarioId]);
 
   /** 미션 상태 갱신 헬퍼. */
   const updateActive = useCallback(
@@ -75,19 +87,13 @@ export function useFoodWebState() {
     [activeScenarioId],
   );
 
-  /** 연결 추가. UI 피드백을 위해 결과 반환. */
-  const addRelation = useCallback(
-    (relationId: string) => {
-      let result: ReturnType<typeof addLink> = { ok: false, reason: 'unknown-relation' };
-      updateActive((m) => {
-        const res = addLink(m.links, relationId, FEEDING_RELATIONS);
-        result = res;
-        if (res.ok) return { ...m, links: [...m.links, res.link] };
-        return m;
-      });
+  const addRelationByPair = useCallback(
+    (foodId: string, eaterId: string) => {
+      const result = addLinkByPair(active.links, foodId, eaterId, FEEDING_RELATIONS);
+      if (result.ok) updateActive((m) => ({ ...m, links: [...m.links, result.link] }));
       return result;
     },
-    [updateActive],
+    [active.links, updateActive],
   );
 
   const removeRelation = useCallback(
@@ -97,9 +103,23 @@ export function useFoodWebState() {
     [updateActive],
   );
 
-  const resetLinks = useCallback(() => {
-    updateActive((m) => ({ ...m, links: clearLinks(m.links) }));
+  const resetMissionState = useCallback(() => {
+    updateActive((m) => ({
+      ...m,
+      links: clearLinks(m.links),
+      predictions: {},
+      reasoning: [],
+    }));
   }, [updateActive]);
+
+  const scenarioLinks = useMemo(() => {
+    const scenario = CHANGE_SCENARIOS.find((s) => s.id === activeScenarioId);
+    return scenario
+      ? scenario.expectedRelations
+          .map(relationToRestoredLink)
+          .filter((link): link is RestoredLink => Boolean(link))
+      : [];
+  }, [activeScenarioId]);
 
   const setPrediction = useCallback(
     (organismId: string, p: Prediction) => {
@@ -132,16 +152,10 @@ export function useFoodWebState() {
   const virtualResults = useMemo(() => {
     const scenario = CHANGE_SCENARIOS.find((s) => s.id === activeScenarioId);
     if (!scenario) return [];
-    // 빈 먹이망이면 정답 관계로 결과를 보여줌(학생이 다 그리지 않아도 결과 비교 가능).
-    const baseLinks =
-      active.links.length > 0
-        ? active.links
-        : scenario.expectedRelations
-            .map((rid) => FEEDING_RELATIONS.find((r) => r.id === rid))
-            .filter((r): r is NonNullable<typeof r> => Boolean(r))
-            .map((r) => ({ relationId: r.id, foodId: r.foodId, eaterId: r.eaterId }));
-    return computeInfluences(baseLinks, scenario.trigger, INITIAL_POPULATIONS, activeOrganismIds);
-  }, [activeScenarioId, active.links, activeOrganismIds]);
+    // 결과는 학생이 일부만 복원했는지가 아니라, 이 미션에서 제시한 기준 먹이망을 사용한다.
+    // 학생의 복원 상태는 grade와 화면의 연결 목록에서 별도로 보여 준다.
+    return computeInfluences(scenarioLinks, scenario.trigger, INITIAL_POPULATIONS, activeOrganismIds);
+  }, [activeScenarioId, activeOrganismIds, scenarioLinks]);
 
   /** 복원 채점. */
   const grade = useMemo(() => {
@@ -186,13 +200,14 @@ export function useFoodWebState() {
     scenario,
     active,
     activeOrganismIds,
-    addRelation,
+    addRelationByPair,
     removeRelation,
-    resetLinks,
+    resetMissionState,
     setPrediction,
     addReasoning,
     removeReasoning,
     virtualResults,
+    scenarioLinks,
     grade,
     startMission,
     goIntro,

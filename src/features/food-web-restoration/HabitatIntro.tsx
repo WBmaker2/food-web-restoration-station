@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { CHANGE_SCENARIOS } from '../../data/changeScenarios';
+import { UpdateLog } from './UpdateLog';
 
 type Props = {
   onStart: (scenarioId: string) => void;
@@ -12,10 +13,9 @@ type Props = {
 // Swiss 영감: 큰 타이포그래피, 대담한 여백, 명확한 위계.
 export function HabitatIntro({ onStart, reduceMotion, onToggleReduceMotion }: Props) {
   const [showDetail, setShowDetail] = useState(false);
-  const [showLog, setShowLog] = useState(false);
 
   return (
-    <div className="habitat-intro">
+    <main id="main-content" className="habitat-intro">
       {/* 히어로 — 큰 제목 + 한 줄 요약 + 즉시 시작 */}
       <section className="habitat-hero">
         <h1 className="habitat-hero__title">먹이망<br />연결 복원소</h1>
@@ -106,26 +106,9 @@ export function HabitatIntro({ onStart, reduceMotion, onToggleReduceMotion }: Pr
           />
           움직임 줄이기
         </label>
-        <button
-          type="button"
-          className="habitat-bottom__log"
-          aria-expanded={showLog}
-          onClick={() => setShowLog(v => !v)}
-        >
-          업데이트 내역
-        </button>
-        {showLog && (
-          <table className="habitat-bottom__log-table">
-            <caption>업데이트 내역</caption>
-            <thead><tr><th scope="col">날짜</th><th scope="col">내용</th></tr></thead>
-            <tbody>
-              <tr><td>2026-07-27</td><td>최초 MVP 설계</td></tr>
-              <tr><td>2026-07-28</td><td>디자인 개선 + 한국어 문법 교정 + 초등학생 친화적 개선</td></tr>
-            </tbody>
-          </table>
-        )}
+        <UpdateLog />
       </section>
-    </div>
+    </main>
   );
 }
 

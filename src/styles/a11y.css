@@ -32,6 +32,7 @@ p { text-wrap: pretty; }
   transition: none !important;
   animation: none !important;
 }
+.fwr-app.is-reduce-motion .gi-pulse { animation: none !important; }
 
 /* 키보드 포커스 — 명확한 outline */
 button:focus-visible,
@@ -60,7 +61,6 @@ input:focus-visible,
   .fweb-trophic-header { font-size: 0.85rem; gap: 4px; padding: 8px 10px; }
   .org-card { width: 110px; }
   .org-card__icon { font-size: 1.6rem; }
-  .habitat-intro__title { font-size: 2.2rem; }
 }
 
 /* ───────────────────────── 모바일 (폰) ───────────────────────── */
@@ -70,8 +70,9 @@ input:focus-visible,
   .fwr-app { padding: 10px 10px 48px; }
   .fwr-header { padding: 10px; gap: 8px; }
   .fwr-header h1 { font-size: 1.2rem; width: 100%; flex: none; }
-  .fwr-home { font-size: 0.85rem; min-height: 40px; padding: 6px 10px; }
+  .fwr-home { font-size: 0.85rem; min-height: 44px; padding: 6px 10px; }
   .fwr-phase { font-size: 0.8rem; padding: 4px 10px; }
+  .fwr-header__tools { width: 100%; justify-content: space-between; margin-left: 0; }
 
   .fweb-canvas-scroll { padding: 10px; }
   .fweb-svg { inset: 10px; }
@@ -88,7 +89,11 @@ input:focus-visible,
   .fweb-trophic-header span:nth-of-type(5),
   .fweb-trophic-header span:nth-of-type(7) { display: inline; }
 
+  .fweb-canvas { display: none; }
   .relation-prompt__clues { grid-template-columns: 1fr; }
+  .relation-prompt__steps { display: block; }
+  .relation-prompt__desktop-hint { display: none; }
+  .relation-prompt__mobile-hint { display: inline; }
   .prediction-grid { grid-template-columns: 1fr; }
   .prediction-row { flex-direction: column; align-items: stretch; }
   .prediction-row__name { min-width: 0; }
@@ -96,8 +101,6 @@ input:focus-visible,
   .fwr-actions button { width: 100%; }
 
   .habitat-intro { padding: 20px 12px 60px; }
-  .habitat-intro__title { font-size: 1.9rem; }
-  .habitat-intro__rule-text { font-size: 1rem; }
   .scenario-panel__compare { flex-direction: column; }
   .scenario-panel__arrow { transform: rotate(90deg); }
   .result-card__table { font-size: 0.82rem; }

@@ -8,6 +8,7 @@ type Props = {
   highlighted?: boolean;
   dimmed?: boolean;
   level?: string;
+  ariaLabel?: string;
   onSelect?: (id: string) => void;
   /** 화면 낭독기용 추가 설명 (예: "선택됨"). */
   stateHint?: string;
@@ -21,6 +22,7 @@ export function OrganismCard({
   highlighted,
   dimmed,
   level,
+  ariaLabel: ariaLabelOverride,
   onSelect,
   stateHint,
 }: Props) {
@@ -33,7 +35,7 @@ export function OrganismCard({
     dimmed ? 'is-dimmed' : '',
     interactive ? 'is-interactive' : '',
   ].join(' ');
-  const ariaLabel = cardAriaLabel(organism.id) + (stateHint ? ` ${stateHint}` : '');
+  const ariaLabel = ariaLabelOverride ?? (cardAriaLabel(organism.id) + (level ? ` 현재 ${level}.` : '') + (stateHint ? ` ${stateHint}` : ''));
   const handleClick = interactive ? () => onSelect?.(organism.id) : undefined;
 
   const inner = (

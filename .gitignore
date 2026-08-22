@@ -49,4 +49,3 @@ gui-test-scripts/
 gui-test-screenshots/
 /playwright-report/
 /test-results/
-/playwright.config.ts

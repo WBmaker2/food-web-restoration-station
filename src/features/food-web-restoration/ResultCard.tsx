@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { getOrganism } from '../../data/foodWebOrganisms';
+import { getRelation } from '../../data/feedingRelations';
 import type { ChangeScenario, InfluenceResult } from '../../data/types';
 import type { Prediction, ReasoningSentence } from './useFoodWebState';
 import { INFLUENCE_LABEL } from '../../lib/influenceEngine';
@@ -13,6 +14,8 @@ type Props = {
   reasoning: ReasoningSentence[];
   matchedCount: number;
   expectedCount: number;
+  missingRelationIds: string[];
+  extraRelationIds: string[];
   /** 사건의 변화 종류 — 근거 문장 템플릿 맥락에 사용. */
   change: ChangeKind;
   reduceMotion: boolean;
@@ -27,11 +30,14 @@ export function ResultCard({
   reasoning,
   matchedCount,
   expectedCount,
+  missingRelationIds,
+  extraRelationIds,
   change,
   reduceMotion,
 }: Props) {
   const [revision, setRevision] = useState('');
   const [copied, setCopied] = useState(false);
+  const [copyError, setCopyError] = useState(false);
 
   const rows = useMemo(() => {
     return influences
@@ -57,6 +63,12 @@ export function ResultCard({
     const lines: string[] = [];
     lines.push(`[먹이망 연결 복원소 결과 — ${scenario.title}]`);
     lines.push(`복원한 관계: ${matchedCount} / ${expectedCount}`);
+    if (missingRelationIds.length > 0) {
+      lines.push(`아직 찾지 못한 관계: ${missingRelationIds.map(relationLabel).join(', ')}`);
+    }
+    if (extraRelationIds.length > 0) {
+      lines.push(`미션 밖에서 선택한 관계: ${extraRelationIds.map(relationLabel).join(', ')}`);
+    }
     lines.push('');
     lines.push('생물별 예측 vs 가상 결과:');
     for (const r of rows) {
@@ -75,16 +87,22 @@ export function ResultCard({
     lines.push('');
     lines.push('이 가상 초원의 조건에서 정리한 결과예요. 실제 자연 전체의 법칙으로 보면 안 돼요.');
     return lines.join('\n');
-  }, [scenario, matchedCount, expectedCount, rows, reasoning, revision, change]);
+  }, [scenario, matchedCount, expectedCount, missingRelationIds, extraRelationIds, rows, reasoning, revision, change]);
 
   const handleCopy = async () => {
+    setCopyError(false);
     try {
-      await navigator.clipboard.writeText(copyText);
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(copyText);
+      } else {
+        copyWithTextArea(copyText);
+      }
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // 클립보드 미지원 환경: 텍스트 영역를 보여줌.
+      // 클립보드가 막힌 환경에서는 아래 텍스트 보기 영역을 안내한다.
       setCopied(false);
+      setCopyError(true);
     }
   };
 
@@ -97,6 +115,19 @@ export function ResultCard({
         <p>
           연결한 관계: <strong>{matchedCount}</strong> / {expectedCount}
           {matchedCount === expectedCount ? ' (모두 찾았어요!)' : ' (조금 더 찾아보세요.)'}
+        </p>
+        {missingRelationIds.length > 0 && (
+          <p className="result-card__missing">
+            아직 찾지 못한 관계: {missingRelationIds.map(relationLabel).join(', ')}
+          </p>
+        )}
+        {extraRelationIds.length > 0 && (
+          <p className="result-card__extra">
+            미션 밖에서 선택한 관계: {extraRelationIds.map(relationLabel).join(', ')}
+          </p>
+        )}
+        <p className="result-card__model-note">
+          아래 가상 결과는 학생이 찾은 수가 아니라, 이 미션에서 제시한 기준 먹이망으로 계산했어요.
         </p>
       </div>
 
@@ -151,6 +182,7 @@ export function ResultCard({
           결과 텍스트 복사
         </button>
         {copied && <span role="status">복사했어요!</span>}
+        {copyError && <span role="status">자동 복사가 막혔어요. 아래 텍스트를 길게 눌러 복사해 주세요.</span>}
         {!copied && (
           <details className="result-card__raw">
             <summary>텍스트로 보기</summary>
@@ -171,6 +203,25 @@ export function ResultCard({
       )}
     </section>
   );
+}
+
+function relationLabel(relationId: string): string {
+  const relation = getRelation(relationId);
+  if (!relation) return relationId;
+  return `${getOrganism(relation.foodId)?.name ?? relation.foodId} → ${getOrganism(relation.eaterId)?.name ?? relation.eaterId}`;
+}
+
+function copyWithTextArea(value: string): void {
+  const textarea = document.createElement('textarea');
+  textarea.value = value;
+  textarea.setAttribute('readonly', '');
+  textarea.style.position = 'fixed';
+  textarea.style.opacity = '0';
+  document.body.appendChild(textarea);
+  textarea.select();
+  const copied = document.execCommand('copy');
+  textarea.remove();
+  if (!copied) throw new Error('copy-command-failed');
 }
 
 const PRED_LABEL: Record<Prediction, string> = {

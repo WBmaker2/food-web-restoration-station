@@ -1,4 +1,5 @@
 import type { ChangeKind } from './types';
+import type { AddLinkResult } from '../lib/foodWebGraph';
 
 // 문서 Section 11.1 선택 피드백 문장 + Section 11.2 근거 문장 틀.
 
@@ -14,6 +15,23 @@ export const FEEDBACK_MESSAGES: Record<string, string> = {
 
 /** 피드백 키 타입. */
 export type FeedbackKey = keyof typeof FEEDBACK_MESSAGES;
+
+/** 관계 연결 결과를 모든 UI가 같은 문장으로 보여 주도록 공유한다. */
+export function describeAddLinkResult(res: AddLinkResult): string {
+  if (res.ok) return '연결했어요. 화살표는 먹히는 생물에서 먹는 생물 쪽이에요.';
+  switch (res.reason) {
+    case 'duplicate':
+      return '이미 연결한 관계예요. 한 번만 저장해요.';
+    case 'self-loop':
+      return '자기 자신을 먹는 연결은 할 수 없어요.';
+    case 'decomposer':
+      return '분해자는 죽은 생물과 유기물을 분해하는 역할을 해요. 포식 관계에 넣지 않아요.';
+    case 'reversed':
+      return '화살표는 먹히는 생물에서 먹는 생물 쪽으로 그려요. 방향을 확인해 보세요.';
+    default:
+      return '이 두 생물은 이 미션의 먹이 관계 후보에 없어요. 단서를 다시 읽어보세요.';
+  }
+}
 
 /** 근거 문장 틀(Section 11.2). 빈 칸 채우기용.
  *  slot 이름 뒤에 '_i'(이/가), '_e'(은/는), '_ul'(을/를), '_w'(와/과) 접미사가 붙으면

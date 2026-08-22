@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   addLink,
+  addLinkByPair,
   removeLink,
   clearLinks,
   gradeRestoration,
@@ -54,6 +55,18 @@ describe('foodWebGraph — 문서 17.1 관계 그래프 단위 검증', () => {
     // grass<-grasshopper 방향(역) 추가 시도: 같은 쌍이므로 reversed 로 감지
     const reversedRel = [{ id: 'r-grasshopper-grass', foodId: 'grasshopper', eaterId: 'grass', clue: '', confidence: 'certain' as const }];
     const res = addLink([first.link], 'r-grasshopper-grass', reversedRel);
+    expect(res.ok).toBe(false);
+    if (!res.ok) expect(res.reason).toBe('reversed');
+  });
+
+  it('카드 두 장의 올바른 순서를 관계로 연결한다', () => {
+    const res = addLinkByPair([], 'grass', 'grasshopper', R);
+    expect(res.ok).toBe(true);
+    if (res.ok) expect(res.link.relationId).toBe('r-grass-grasshopper');
+  });
+
+  it('카드 두 장을 역순으로 고르면 방향 피드백을 반환한다', () => {
+    const res = addLinkByPair([], 'grasshopper', 'grass', R);
     expect(res.ok).toBe(false);
     if (!res.ok) expect(res.reason).toBe('reversed');
   });
