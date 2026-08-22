@@ -9,7 +9,7 @@
 | 기준 브랜치 | `main` |
 | 대상 | 초등 5~6학년 과학 교육용 정적 웹앱 |
 | 범위 | 코드, 학습 로직, 콘텐츠, UI/UX, 디자인, 접근성, 성능, 테스트, 문서 |
-| 배포 | 이번 작업에서는 로컬 구현·검증까지만 진행 |
+| 배포 | GitHub Pages 배포 완료 · 공개 URL 브라우저 검증 완료 |
 
 기존 [`2026-07-27-food-web-restoration-station-mvp.md`](../2026-07-27-food-web-restoration-station-mvp.md)는 초기 MVP 설계 기록으로 보존합니다. 이 문서는 현재 저장소의 실제 동작과 브라우저 감사 결과를 기준으로 한 실행 계획입니다.
 
@@ -208,6 +208,7 @@
 | 2026-08-22 | 2단계 | 데스크톱 카드 선택과 모바일 단계형 연결을 분리하고, 정답 화살표를 제거했으며 역방향·무관·분해자 오답 피드백을 연결 |
 | 2026-08-22 | 3단계 | CSS를 3개 파일로 분리하고 시스템 폰트·favicon·skip link·영향 라벨·터치 영역·`gi-pulse`·reduced motion을 정리 |
 | 2026-08-22 | 4단계 | 단위 테스트·타입 검사·빌드·Playwright 학생 흐름 E2E·CI·README·TESTING·업데이트 내역을 정리 |
+| 2026-08-22 | 배포 | `09f8553`을 `main`에 푸시하고 GitHub Pages 배포 및 공개 URL 학생 흐름 검증 완료 |
 
 ## 8. 계획 대비 검토 기록
 
@@ -223,3 +224,11 @@
 ### 계획 조정 기록
 
 로컬 환경에서 다른 Vite 앱이 기본 포트 `5173`을 사용하고 있어 Playwright 전용 서버 포트를 `4173`으로 고정했습니다. 제품 동작 범위에는 영향을 주지 않으며, `playwright.config.ts`가 매 실행마다 독립 서버를 시작합니다.
+
+## 9. 배포 증거
+
+- 커밋: [`09f8553`](https://github.com/WBmaker2/food-web-restoration-station/commit/09f8553024fb1019b405e1f38b5755b88879ac96)
+- 배포 실행: [Deploy to GitHub Pages](https://github.com/WBmaker2/food-web-restoration-station/actions/runs/32563093346)
+- 전체 테스트 실행: [Test](https://github.com/WBmaker2/food-web-restoration-station/actions/runs/32563093322)
+- 공개 앱: [먹이망 연결 복원소](https://wbmaker2.github.io/food-web-restoration-station/)
+- 공개 URL 검증: HTTP 200, 데스크톱·375px 모바일 학생 흐름 각 1개 통과
