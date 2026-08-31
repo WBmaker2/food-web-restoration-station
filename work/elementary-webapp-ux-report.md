@@ -4,7 +4,7 @@
 
 실제 공개 화면과 초등 5~6학년 학습자 흐름을 기준으로 점검한 뒤, 정답 노출·단계 건너뛰기·긴 페이지 전환·모바일 읽기성 문제를 추천 순서대로 개선했습니다. 해결되지 않은 P0/P1은 0개입니다.
 
-이번 작업은 소스·문서·검증 범위로 한정했습니다. 커밋·푸시·배포·HVC 등록은 이번 요청에서 실행하지 않았으므로 공개 주소는 변경 전 배포본을 가리킵니다.
+이번 작업은 2026-08-31 기능 커밋 `bccb1ab`로 기록하고, PR [#1](https://github.com/WBmaker2/food-web-restoration-station/pull/1)을 통해 `main` 커밋 `0445ba0`에 병합했습니다. GitHub Pages 배포도 완료되어 아래 공개 주소에서 개선된 학습자 흐름을 확인할 수 있습니다.
 
 ## 적용한 개선
 
@@ -66,6 +66,8 @@
 | `npm run build:pages` | 통과 |
 | `git diff --check` | 통과 |
 | Playwright 학습자 흐름 | 격리한 4174 포트에서 2개 시나리오 통과 |
+| PR CI | [test 실행 통과](https://github.com/WBmaker2/food-web-restoration-station/actions/runs/33384721285) |
+| GitHub Pages 배포 | [Deploy to GitHub Pages 성공](https://github.com/WBmaker2/food-web-restoration-station/actions/runs/33384807219) |
 | 모바일 가로 폭 | 320px/375px 흐름에서 `scrollWidth <= clientWidth + 1` 확인 |
 | 320px 결과 표 | 행 카드와 `data-label` 확인 |
 | 320px 용어 도움말 | viewport 좌우 경계 안에 위치 확인 |
@@ -75,13 +77,15 @@
 
 공식 설정 재실행은 macOS Chromium이 브라우저 시작 단계에서 `MachPortRendezvous ... Permission denied`로 종료되어 추가 진행하지 않았습니다. 앞선 동일 코드의 격리 실행은 2개 모두 통과했으며, 이 오류는 앱 assertion 실패가 아닌 로컬 Chromium 실행 환경 오류입니다.
 
+배포 후 공개 브라우저에서도 제목 `먹이망 연결 복원소`, 1번 미션의 부분 연결 잠금과 직접 예측 전 결과 잠금, 320px 결과표, 375px 미션 5 단계형 연결, 가로 넘침 없음, console error 0건을 확인했습니다. 공개 HTTP 응답은 `200`이며, GitHub Actions에는 배포를 막지 않는 Node.js 20 deprecation 알림만 남았습니다.
+
 ## 문서와 결과 확인
 
 - 계획: `/Volumes/ External Drive 256G/Dev2/z-ai/food-web-restoration-station/work/elementary-webapp-ux-plan.md`
 - 상세 감사: `/Volumes/ External Drive 256G/Dev2/z-ai/food-web-restoration-station/work/elementary-webapp-ux-audit.md`
 - 문구 감사: `/Volumes/ External Drive 256G/Dev2/z-ai/food-web-restoration-station/work/elementary-webapp-ux-language-audit.md`
 - 시뮬레이션 판단: `/Volumes/ External Drive 256G/Dev2/z-ai/food-web-restoration-station/work/elementary-webapp-ux-simulation-decision.md`
-- 공개 확인용 주소(이번 변경 전 배포본): [먹이망 연결 복원소](https://wbmaker2.github.io/food-web-restoration-station/)
+- 공개 확인용 주소(개선 반영 배포본): [먹이망 연결 복원소](https://wbmaker2.github.io/food-web-restoration-station/)
 - 저장소: [food-web-restoration-station](https://github.com/WBmaker2/food-web-restoration-station)
 
 ## 남은 후속 확인
@@ -89,4 +93,5 @@
 - 교사·교과 담당자가 미션별 생물 관계와 단순화된 영향 규칙을 검토합니다.
 - 감소·사라짐 사건의 모든 근거 문장 템플릿을 수업 맥락에서 다시 읽어 봅니다.
 - Safari 실제 기기 확인과 수업 현장 관찰을 진행합니다.
-- 배포가 필요할 때 별도의 커밋·푸시·배포 게이트에서 공개 URL, 자산, 학습자 경로, 좁은 화면, 콘솔을 다시 확인합니다.
+- GitHub Actions의 Node.js 20 deprecation 알림을 향후 워크플로 런타임 업데이트 때 정리합니다.
+- 교사·교과 검토와 Safari 실제 기기 확인은 자동 검증 밖의 수업 현장 후속 확인으로 진행합니다.
