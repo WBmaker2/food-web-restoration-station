@@ -186,7 +186,7 @@ export function FoodWebCanvas({
                 selected={selectedId === id || stepFoodId === id}
                 highlighted={Boolean(selectedId && selectedId === id)}
                 dimmed={Boolean(selectedId && selectedId !== id)}
-                level={inf ? `거리 ${Number.isFinite(inf.distance) ? inf.distance : '∞'}` : undefined}
+                meta={inf ? `영향 거리: ${Number.isFinite(inf.distance) ? `${inf.distance}단계` : '연결 없음'}` : undefined}
                 ariaLabel={inf ? influenceAriaLabel(id, INFLUENCE_LABEL[inf.influence], inf.distance) : undefined}
                 onSelect={onSelectOrganism}
                 stateHint={stepFoodId === id ? '먹히는 생물로 선택됨' : undefined}

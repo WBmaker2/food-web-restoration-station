@@ -1,4 +1,4 @@
-import { useState, useId } from 'react';
+import { useEffect, useId, useRef, useState, type CSSProperties } from 'react';
 
 type Props = {
   /** 어려운 용어 (예: '포식 압력') */
@@ -15,13 +15,71 @@ type Props = {
 export function TermTip({ term, help, children }: Props) {
   const [hoverOpen, setHoverOpen] = useState(false);
   const [clickOpen, setClickOpen] = useState(false);
+  const [tipPosition, setTipPosition] = useState<TipPosition | null>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const tipRef = useRef<HTMLSpanElement>(null);
   const tipId = useId();
   const open = hoverOpen || clickOpen;
+
+  // 모바일에서는 긴 풀이가 화면 밖으로 잘리지 않도록 버튼과 도움말의 실제 위치를
+  // 읽어 뷰포트 안에 고정한다. 데스크톱에서는 기존 absolute 배치를 그대로 사용한다.
+  useEffect(() => {
+    if (!open) {
+      setTipPosition(null);
+      return undefined;
+    }
+
+    const updatePosition = () => {
+      const button = buttonRef.current;
+      const tip = tipRef.current;
+      if (!button || !tip) return;
+
+      const buttonRect = button.getBoundingClientRect();
+      const tipRect = tip.getBoundingClientRect();
+      const padding = 12;
+      const gap = 8;
+      const left = Math.min(
+        Math.max(padding, buttonRect.left),
+        Math.max(padding, window.innerWidth - tipRect.width - padding),
+      );
+      const aboveTop = buttonRect.top - tipRect.height - gap;
+      const belowTop = buttonRect.bottom + gap;
+      const fitsAbove = aboveTop >= padding;
+      const fitsBelow = belowTop + tipRect.height <= window.innerHeight - padding;
+      const placement: TipPosition['placement'] = fitsAbove || !fitsBelow ? 'above' : 'below';
+      const top = placement === 'above'
+        ? Math.max(padding, aboveTop)
+        : belowTop;
+      const arrowLeft = Math.min(
+        Math.max(18, buttonRect.left + buttonRect.width / 2 - left),
+        Math.max(18, tipRect.width - 18),
+      );
+      setTipPosition({ left, top, arrowLeft, placement });
+    };
+
+    const frame = window.requestAnimationFrame(updatePosition);
+    window.addEventListener('resize', updatePosition);
+    window.addEventListener('scroll', updatePosition, true);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('scroll', updatePosition, true);
+    };
+  }, [open]);
+
+  const tipStyle = tipPosition
+    ? ({
+      '--term-tip-left': `${tipPosition.left}px`,
+      '--term-tip-top': `${tipPosition.top}px`,
+      '--term-tip-arrow-left': `${tipPosition.arrowLeft}px`,
+    } as CSSProperties)
+    : undefined;
 
   return (
     <span className="term-tip">
       <button
         type="button"
+        ref={buttonRef}
         className={`term-tip__btn ${open ? 'is-open' : ''}`}
         aria-describedby={tipId}
         aria-expanded={open}
@@ -35,13 +93,27 @@ export function TermTip({ term, help, children }: Props) {
         <span className="term-tip__mark" aria-hidden="true">?</span>
       </button>
       {open && (
-        <span className="term-tip__help" id={tipId} role="tooltip" onClick={() => setClickOpen(false)}>
+        <span
+          ref={tipRef}
+          className={`term-tip__help ${tipPosition?.placement === 'below' ? 'is-below' : ''}`}
+          id={tipId}
+          role="tooltip"
+          style={tipStyle}
+          onClick={() => setClickOpen(false)}
+        >
           {help}
         </span>
       )}
     </span>
   );
 }
+
+type TipPosition = {
+  left: number;
+  top: number;
+  arrowLeft: number;
+  placement: 'above' | 'below';
+};
 
 /** 자주 쓰는 어려운 용어의 풀이 사전. */
 export const TERM_HELP: Record<string, string> = {

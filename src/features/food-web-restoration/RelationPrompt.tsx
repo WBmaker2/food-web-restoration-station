@@ -133,7 +133,7 @@ export function RelationPrompt({
         )}
         {step.phase === 'confirm' && (
           <div className="step-choices">
-            <button type="button" className="step-choice step-choice--primary" onClick={confirmConnect}>
+            <button type="button" className="step-choice step-choice--primary gi-pulse" onClick={confirmConnect}>
               연결 확인
             </button>
             <button type="button" className="step-choice" onClick={resetStep}>

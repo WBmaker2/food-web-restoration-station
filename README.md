@@ -35,7 +35,7 @@ src/
   data/        타입·생물 카드·먹이 관계·미션·피드백
   lib/         foodWebGraph(관계 그래프) · influenceEngine(영향 판정) · accessibilityLabels
   features/    UI 컴포넌트 + useFoodWebState
-  styles/      food-web-restoration.css · food-web-restoration-panels.css · a11y.css
+  styles/      food-web-restoration.css · food-web-restoration-panels.css · food-web-restoration-terms.css · a11y.css
 e2e/           Playwright 학생 흐름 테스트
 docs/          승인된 개선 계획과 실행 기록
 .github/       테스트 및 GitHub Pages 배포 워크플로우
@@ -46,7 +46,7 @@ docs/          승인된 개선 계획과 실행 기록
 - 모든 생물·관계는 **"이 가상 초원의 규칙"** 이며, 실제 자연 전체를 재현한 것이 아니다.
 - 실제 학급 적용 전 교과서·교사 과학 검수가 필요하다.
 - 새로고침 시 초기화되며 개인 데이터를 저장하지 않는다.
-- 현재 구현·검증 범위와 단계별 개선 기록은 [`docs/2026-08-22-food-web-restoration-improvement-plan.md`](docs/2026-08-22-food-web-restoration-improvement-plan.md)에 기록한다.
+- 누적 구현·검증 범위와 단계별 개선 기록은 [`docs/2026-08-22-food-web-restoration-improvement-plan.md`](docs/2026-08-22-food-web-restoration-improvement-plan.md)에, 2026-08-31 UX 감사와 적용 결과는 [`work/elementary-webapp-ux-report.md`](work/elementary-webapp-ux-report.md)에 기록한다.
 
 ## 라이선스
 

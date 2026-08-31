@@ -80,7 +80,7 @@ input:focus-visible,
   .org-card__icon { font-size: 1.4rem; }
   .org-card__name { font-size: 0.82rem; }
   .org-card__role-tag { font-size: 0.62rem; padding: 1px 6px; }
-  .org-card__level { font-size: 0.6rem; }
+  .org-card__meta { font-size: 0.6rem; }
 
   .fweb-trophic-header { font-size: 0.72rem; }
   .fweb-trophic-header span:not(.fweb-trophic-arrow) { display: none; }
@@ -103,8 +103,76 @@ input:focus-visible,
   .habitat-intro { padding: 20px 12px 60px; }
   .scenario-panel__compare { flex-direction: column; }
   .scenario-panel__arrow { transform: rotate(90deg); }
-  .result-card__table { font-size: 0.82rem; }
-  .result-card__table th, .result-card__table td { padding: 6px 4px; }
+  .fwr-action-hint { text-align: left; }
+
+  /* 긴 도움말은 용어 버튼의 왼쪽에서 시작해 화면 밖으로 잘리지 않게 한다. */
+  .term-tip__help {
+    position: fixed;
+    left: var(--term-tip-left, 12px);
+    top: var(--term-tip-top, 12px);
+    bottom: auto;
+    transform: none;
+    max-width: calc(100vw - 24px);
+  }
+  .term-tip__help::after {
+    left: var(--term-tip-arrow-left, 26px);
+  }
+  .term-tip__help.is-below::after {
+    top: auto;
+    bottom: 100%;
+    border-top-color: transparent;
+    border-bottom-color: var(--ink);
+  }
+
+  /* 표의 의미는 유지하되, 작은 화면에서는 한 행씩 읽는 카드로 재배치한다. */
+  .result-card__table {
+    display: block;
+    border-collapse: separate;
+    font-size: 0.88rem;
+  }
+  .result-card__table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  .result-card__table tbody { display: grid; gap: 10px; }
+  .result-card__table tbody tr {
+    display: block;
+    padding: 8px 12px;
+    border: 2px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--paper-card);
+  }
+  .result-card__table tbody th,
+  .result-card__table tbody td {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    border: 0;
+    border-top: 1px dashed var(--line);
+    padding: 7px 0;
+    text-align: right;
+  }
+  .result-card__table tbody th {
+    border-top: 0;
+    padding-top: 0;
+    color: var(--leaf-deep);
+    font-size: 1rem;
+    text-align: left;
+  }
+  .result-card__table tbody td::before {
+    content: attr(data-label);
+    color: var(--ink-muted);
+    font-weight: 600;
+    text-align: left;
+  }
 }
 
 /* ───────────────────────── 고대비 모드 ───────────────────────── */

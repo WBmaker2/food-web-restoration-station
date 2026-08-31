@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useFoodWebState } from './useFoodWebState';
 import { HabitatIntro } from './HabitatIntro';
 import { FoodWebCanvas } from './FoodWebCanvas';
@@ -20,7 +20,17 @@ export function FoodWebRestorationApp() {
   const [phase, setPhase] = useState<MissionPhase>('restore');
   const [selectedFoodId, setSelectedFoodId] = useState<string | null>(null);
   const [canvasFeedback, setCanvasFeedback] = useState<string | null>(null);
+  const phaseHeadingRef = useRef<HTMLHeadingElement>(null);
   const skipLink = <a className="skip-link" href="#main-content">본문으로 건너뛰기</a>;
+
+  // 화면 단계가 바뀌면 새 화면의 시작점으로 이동해, 긴 페이지에서 다음 단계가
+  // 중간부터 보이는 문제를 막는다. 제목에 초점을 보내 키보드 사용자도 위치를 알 수 있게 한다.
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    if (st.screen === 'mission') {
+      phaseHeadingRef.current?.focus({ preventScroll: true });
+    }
+  }, [st.screen, st.activeScenarioId, phase]);
 
   if (st.screen === 'intro' || !st.scenario) {
     return (
@@ -44,9 +54,12 @@ export function FoodWebRestorationApp() {
   const connectedIds = st.active.links.map((l) => l.relationId);
   const isArrowTraining = scenario.learningMode === 'arrow';
   const expectedMatchedCount = st.grade.matched.length;
-  const canAdvance = isArrowTraining
-    ? st.grade.missing.length === 0
-    : st.active.links.length > 0;
+  const canAdvance = st.grade.missing.length === 0;
+  const directPredictionIds = st.virtualResults
+    .filter((inf) => inf.distance === 1)
+    .map((inf) => inf.organismId);
+  const predictedDirectCount = directPredictionIds.filter((id) => Boolean(st.active.predictions[id])).length;
+  const canAdvanceToResult = directPredictionIds.every((id) => Boolean(st.active.predictions[id]));
 
   const handleCanvasOrganismSelect = (id: string) => {
     if (!selectedFoodId) {
@@ -81,7 +94,7 @@ export function FoodWebRestorationApp() {
         }}>
           ← 처음으로
         </button>
-        <h1>{scenario.title}</h1>
+        <h1 ref={phaseHeadingRef} tabIndex={-1}>{scenario.title}</h1>
         <span className="fwr-phase" aria-live="polite">
           {phase === 'restore' && '1단계: 먹이망 복원'}
           {phase === 'predict' && '2단계: 변화 예측'}
@@ -158,6 +171,11 @@ export function FoodWebRestorationApp() {
                 ? '다음: 먹이망 복원하기 →'
                 : `다음: 변화 예측하기 (${expectedMatchedCount}/${scenario.expectedRelations.length}) →`}
             </button>
+            {!isArrowTraining && !canAdvance && (
+              <p className="fwr-action-hint" role="status">
+                남은 연결을 모두 찾으면 다음 단계로 갈 수 있어요.
+              </p>
+            )}
           </div>
         </>
       )}
@@ -183,9 +201,19 @@ export function FoodWebRestorationApp() {
           />
           <div className="fwr-actions">
             <button type="button" onClick={() => setPhase('restore')}>← 이전 단계</button>
-            <button type="button" className="fwr-next gi-pulse" onClick={() => setPhase('result')}>
-              다음: 결과 비교하기 →
+            <button
+              type="button"
+              className="fwr-next gi-pulse"
+              onClick={() => setPhase('result')}
+              disabled={!canAdvanceToResult}
+            >
+              다음: 결과 비교하기 ({predictedDirectCount}/{directPredictionIds.length}) →
             </button>
+            {!canAdvanceToResult && (
+              <p className="fwr-action-hint" role="status">
+                바로 연결된 생물의 변화를 모두 고르면 결과를 확인할 수 있어요.
+              </p>
+            )}
           </div>
         </>
       )}
