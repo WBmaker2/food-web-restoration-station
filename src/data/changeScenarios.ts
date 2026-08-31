@@ -24,7 +24,7 @@ export const CHANGE_SCENARIOS: ChangeScenario[] = [
     trigger: { organismId: 'grass', change: 'increase' },
     fixedConditions: [
       '이 가상 초원에서는 생산자가 풀 하나뿐이에요.',
-      '풀 → 메뚜기 → 개구리 → 뱀 → 매의 연결을 먼저 살펴봐요.',
+      '단서를 이어 여러 먹이사슬이 하나의 먹이망이 되는 모습을 살펴봐요.',
     ],
     expectedRelations: [
       'r-grass-grasshopper',

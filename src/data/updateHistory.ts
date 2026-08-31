@@ -5,6 +5,7 @@ export type UpdateHistoryEntry = {
 
 /** 학생·교사가 현재 앱의 개선 내용을 짧게 확인할 수 있는 기록. */
 export const UPDATE_HISTORY: UpdateHistoryEntry[] = [
+  { date: '2026-08-31', summary: '미션 전환 위치와 예측·결과 비교 흐름을 모바일까지 다시 다듬었어요.' },
   { date: '2026-08-22', summary: '학생 흐름 브라우저 테스트와 배포 전 CI 검증을 추가했어요.' },
   { date: '2026-08-22', summary: '관계 연결 피드백과 대체 먹이 계산 기준을 안정화했어요.' },
   { date: '2026-08-22', summary: '큰 화면 카드 선택과 작은 화면 단계형 연결을 분리했어요.' },

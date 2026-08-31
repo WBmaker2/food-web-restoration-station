@@ -44,7 +44,7 @@ export function PredictionPanel({
     <section className="prediction-panel" aria-label="변화 예측">
       <h2>변화 예측하기</h2>
       <p className="prediction-panel__hint">
-        바로 연결된 생물부터 예측하고, <TermTip term="간접 영향" help="직접 연결되지는 않았지만 건너건너 영향을 받는 것. 풀이 줄면 뱀도 간접으로 영향을 받아요.">건너 연결</TermTip>은 가능성으로만 생각해 보세요.
+        이 미션의 먹이망을 보고 바로 연결된 생물부터 예측해 보세요. <TermTip term="간접 영향" help="직접 연결되지는 않았지만 건너건너 영향을 받는 것. 예를 들어 풀이 줄면 뱀도 간접으로 영향을 받을 수 있어요.">건너 연결</TermTip>은 가능성으로만 생각해 보세요.
       </p>
 
       <h3>바로 연결된 생물 <span className="prediction-panel__step-badge">먼저 예측!</span></h3>
@@ -144,21 +144,28 @@ function ReasoningBuilder({
     renderReasoningSentence(t.id, f, change);
 
   const add = () => {
-    onAdd({ templateId, filled });
+    if (!allSlotsFilled) return;
+    onAdd({ templateId, filled: { ...filled } });
     setFilled({});
   };
 
   // slot 이름 → 초등학생용 친화적 라벨
+  const changeSubject = change === 'increase'
+    ? '늘어난 생물'
+    : change === 'disappear'
+      ? '사라진 생물'
+      : '줄어든 생물';
   const slotLabel: Record<string, string> = {
-    food: '줄어든/없어진 생물',
+    food: changeSubject,
     eater: '영향 받는 생물',
-    predator: '줄어든/없어진 생물',
-    prey: '남은 생물',
-    alt: '다른 먹이',
+    predator: changeSubject,
+    prey: '먹히던 생물',
+    alt: '남아 있는 다른 먹이',
     a: '생물 1',
     b: '생물 2',
     dir: '방향',
   };
+  const allSlotsFilled = tpl.slots.every((slot) => Boolean(filled[slot]?.trim()));
 
   return (
     <details className="reasoning-builder">
@@ -194,7 +201,18 @@ function ReasoningBuilder({
       <p className="reasoning-builder__preview" aria-live="polite">
         미리 보기: {renderSentence(tpl, filled)}
       </p>
-      <button type="button" className="reasoning-builder__add" onClick={add}>문장 추가</button>
+      <button
+        type="button"
+        className="reasoning-builder__add"
+        onClick={add}
+        disabled={!allSlotsFilled}
+        aria-describedby="reasoning-add-help"
+      >
+        문장 추가
+      </button>
+      <p id="reasoning-add-help" className="reasoning-builder__add-help">
+        빈칸을 모두 고르면 문장을 추가할 수 있어요.
+      </p>
 
       <ul className="reasoning-builder__list">
         {reasoning.map((r, i) => {

@@ -27,8 +27,8 @@ export function ChangeScenarioPanel({ scenario, beforeLevels, afterLevels, phase
         ? <>이번 단계는 <strong>화살표 방향</strong>만 연습해요. 먹히는 생물에서 먹는 생물 쪽으로 연결하세요.</>
         : <>아래 <strong>단서</strong>를 읽고 카드를 연결해 먹이 관계를 만드세요.</>,
     },
-    predict: { icon: '🤔', text: <>연결한 관계를 보고, 각 생물이 <strong>어떻게 변할지</strong> 예측해 보세요.</> },
-    result: { icon: '✨', text: <>내 예측과 <strong>실제 결과</strong>를 비교하고, 다르면 생각을 고쳐 보세요.</> },
+    predict: { icon: '🤔', text: <>이 미션의 먹이망을 보고, 각 생물이 <strong>어떻게 변할지</strong> 예측해 보세요.</> },
+    result: { icon: '✨', text: <>내 예측과 <strong>가상 결과</strong>를 비교하고, 다르면 생각을 고쳐 보세요.</> },
   };
 
   return (

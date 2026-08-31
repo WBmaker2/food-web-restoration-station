@@ -7,7 +7,7 @@ type Props = {
   selected?: boolean;
   highlighted?: boolean;
   dimmed?: boolean;
-  level?: string;
+  meta?: string;
   ariaLabel?: string;
   onSelect?: (id: string) => void;
   /** 화면 낭독기용 추가 설명 (예: "선택됨"). */
@@ -21,7 +21,7 @@ export function OrganismCard({
   selected,
   highlighted,
   dimmed,
-  level,
+  meta,
   ariaLabel: ariaLabelOverride,
   onSelect,
   stateHint,
@@ -35,7 +35,7 @@ export function OrganismCard({
     dimmed ? 'is-dimmed' : '',
     interactive ? 'is-interactive' : '',
   ].join(' ');
-  const ariaLabel = ariaLabelOverride ?? (cardAriaLabel(organism.id) + (level ? ` 현재 ${level}.` : '') + (stateHint ? ` ${stateHint}` : ''));
+  const ariaLabel = ariaLabelOverride ?? (cardAriaLabel(organism.id) + (meta ? ` ${meta}.` : '') + (stateHint ? ` ${stateHint}` : ''));
   const handleClick = interactive ? () => onSelect?.(organism.id) : undefined;
 
   const inner = (
@@ -43,7 +43,7 @@ export function OrganismCard({
       <span className="org-card__icon" aria-hidden="true">{organism.icon}</span>
       <span className="org-card__name">{organism.name}</span>
       <span className="org-card__role-tag">{ROLE_LABEL[organism.role]}</span>
-      {level && <span className="org-card__level">수준: {level}</span>}
+      {meta && <span className="org-card__meta">{meta}</span>}
     </>
   );
 

@@ -338,6 +338,7 @@
   font-weight: 600;
 }
 .reasoning-builder__add { background: var(--inc-increase); color: #fff; border-color: #1f5a2a; font-weight: 700; }
+.reasoning-builder__add-help { margin: 6px 0 0; color: var(--ink-muted); font-size: 0.78rem; }
 .reasoning-builder__list { list-style: none; padding: 0; margin: 12px 0 0; }
 .reasoning-builder__list li {
   display: flex; align-items: center; justify-content: space-between; gap: 8px;

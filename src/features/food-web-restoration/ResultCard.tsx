@@ -44,9 +44,9 @@ export function ResultCard({
       .filter((inf) => inf.distance !== Infinity || predictions[inf.organismId])
       .map((inf) => {
         const pred = predictions[inf.organismId];
-        const predLabel = pred ? PRED_LABEL[pred] : '예측 안 함';
+        const predLabel = inf.distance === 0 ? '사건에서 정함' : pred ? PRED_LABEL[pred] : '아직 선택 안 함';
         const resultLabel = INFLUENCE_LABEL[inf.influence];
-        const agree = predictionMatches(pred, inf.influence);
+        const agree = inf.distance === 0 ? null : predictionMatches(pred, inf.influence);
         return {
           id: inf.organismId,
           name: getOrganism(inf.organismId)?.name ?? inf.organismId,
@@ -73,7 +73,8 @@ export function ResultCard({
     lines.push('생물별 예측 vs 가상 결과:');
     for (const r of rows) {
       const mark = r.agree === true ? '일치' : r.agree === false ? '다름' : '-';
-      lines.push(`- ${r.name} (거리 ${Number.isFinite(r.distance) ? r.distance : '∞'}): 예측 ${r.predLabel} / 결과 ${r.resultLabel} [${mark}]`);
+      const predictionSummary = r.distance === 0 ? r.predLabel : `예측 ${r.predLabel}`;
+      lines.push(`- ${r.name} (거리 ${Number.isFinite(r.distance) ? r.distance : '∞'}): ${predictionSummary} / 결과 ${r.resultLabel} [${mark}]`);
     }
     if (reasoning.length > 0) {
       lines.push('');
@@ -146,10 +147,10 @@ export function ResultCard({
           {rows.map((r) => (
             <tr key={r.id}>
               <th scope="row">{r.name}</th>
-              <td>{Number.isFinite(r.distance) ? r.distance : '∞'}</td>
-              <td>{r.predLabel}</td>
-              <td>{r.resultLabel}</td>
-              <td className={r.agree === true ? 'agree' : r.agree === false ? 'disagree' : 'unknown'}>
+              <td data-label="거리">{Number.isFinite(r.distance) ? r.distance : '∞'}</td>
+              <td data-label="내 예측">{r.predLabel}</td>
+              <td data-label="가상 결과">{r.resultLabel}</td>
+              <td data-label="비교" className={r.agree === true ? 'agree' : r.agree === false ? 'disagree' : 'unknown'}>
                 {r.agree === true ? '일치' : r.agree === false ? '다름' : '-'}
               </td>
             </tr>

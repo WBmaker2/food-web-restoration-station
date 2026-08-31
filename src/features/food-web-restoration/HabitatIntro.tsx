@@ -26,7 +26,7 @@ export function HabitatIntro({ onStart, reduceMotion, onToggleReduceMotion }: Pr
         </p>
         <button
           type="button"
-          className="habitat-hero__start"
+          className="habitat-hero__start gi-pulse"
           onClick={() => onStart(CHANGE_SCENARIOS[0].id)}
         >
           🌿 처음부터 시작하기 (미션 0)
@@ -44,7 +44,7 @@ export function HabitatIntro({ onStart, reduceMotion, onToggleReduceMotion }: Pr
           </li>
           <li>
             <span className="habitat-rule-card__num">2</span>
-            <span>단서를 읽고 카드를 연결해 <strong>먹이사슬</strong>을 만들어요.</span>
+            <span>단서를 읽고 여러 먹이사슬을 이어 <strong>먹이망</strong>을 만들어요.</span>
           </li>
           <li>
             <span className="habitat-rule-card__num">3</span>
